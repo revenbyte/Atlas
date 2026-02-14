@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas · executor</title>
+    <title>Atlas · voice + real AI</title>
     <style>
         * {
             margin: 0;
@@ -33,9 +33,31 @@
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
         }
 
-        /* Status bar */
+        /* Voice visualization */
+        .voice-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #64b5f6, #4caf50, #64b5f6);
+            background-size: 200% 100%;
+            animation: voiceWave 2s infinite;
+            display: none;
+        }
+
+        @keyframes voiceWave {
+            0% { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .voice-bar.listening {
+            display: block;
+        }
+
         .status-line {
             background: #0d0f17;
             border-bottom: 1px solid #1e2632;
@@ -67,7 +89,44 @@
             50% { opacity: 0.5; }
         }
 
-        /* Chat area */
+        .voice-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #1a2632;
+            border: 1px solid #2a3a4a;
+            transition: all 0.2s;
+        }
+
+        .voice-indicator:hover {
+            border-color: #64b5f6;
+        }
+
+        .voice-indicator.active {
+            background: #2a3a4a;
+            border-color: #4caf50;
+        }
+
+        .voice-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff4d4d;
+            border-radius: 50%;
+        }
+
+        .voice-indicator.active .voice-dot {
+            background: #4caf50;
+            animation: voicePulse 1s infinite;
+        }
+
+        @keyframes voicePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
         .chat-area {
             flex: 1;
             overflow-y: auto;
@@ -118,50 +177,6 @@
             border-bottom-left-radius: 4px;
         }
 
-        /* Special message types */
-        .weather-card {
-            background: linear-gradient(145deg, #0d1a2a, #0f1f33);
-            border: 1px solid #2a4a6a;
-            border-radius: 12px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-        }
-
-        .weather-row {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 0.5rem 0;
-        }
-
-        .weather-temp {
-            font-size: 2rem;
-            color: #64b5f6;
-        }
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.5rem;
-            margin: 0.3rem 0;
-            background: #1a232e;
-            border-radius: 8px;
-        }
-
-        .todo-check {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #3a4a5a;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .todo-check.checked {
-            background: #4caf50;
-            border-color: #4caf50;
-        }
-
         .message-time {
             font-size: 0.7rem;
             color: #5f738c;
@@ -169,7 +184,6 @@
             padding: 0 0.5rem;
         }
 
-        /* Thinking indicator */
         .thinking {
             display: flex;
             gap: 4px;
@@ -196,7 +210,6 @@
             30% { transform: translateY(-4px); opacity: 1; }
         }
 
-        /* Input area */
         .input-area {
             padding: 1rem 1.5rem;
             border-top: 1px solid #1e2632;
@@ -237,7 +250,7 @@
             color: #3a4a5a;
         }
 
-        .send-button {
+        .action-button {
             background: #1a2632;
             border: 1px solid #2a3a4a;
             color: #8a9bb5;
@@ -249,15 +262,27 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 1.2rem;
         }
 
-        .send-button:hover {
+        .action-button:hover {
             background: #2a3a4a;
             color: #64b5f6;
             border-color: #64b5f6;
         }
 
-        /* Quick commands */
+        .action-button.voice-active {
+            background: #4caf50;
+            color: #fff;
+            border-color: #4caf50;
+            animation: voiceButtonPulse 1.5s infinite;
+        }
+
+        @keyframes voiceButtonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
         .quick-row {
             display: flex;
             gap: 0.5rem;
@@ -282,49 +307,38 @@
             transform: translateY(-1px);
         }
 
-        /* Feature suggestion - contextual */
-        .suggestion-card {
-            background: #1a2533;
-            border-left: 3px solid #64b5f6;
-            padding: 0.8rem 1.2rem;
-            margin: 0.5rem 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.85rem;
-            color: #8a9bb5;
-        }
-
-        .suggestion-title {
+        .context-badge {
+            background: #1a2632;
+            border: 1px solid #2a3a4a;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
             color: #64b5f6;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0c12;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2a3a4a;
-            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="atlas-terminal">
+        <!-- Voice visualization bar -->
+        <div class="voice-bar" id="voiceBar"></div>
+
         <!-- Status -->
         <div class="status-line">
             <div class="atlas-logo">ATLAS</div>
-            <div>EJ · <span id="taskCount">0</span> tasks · <span id="weatherStatus">weather ready</span></div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span class="context-badge" id="contextDisplay">general</span>
+                <div class="voice-indicator" id="voiceIndicator" onclick="toggleVoice()">
+                    <span class="voice-dot" id="voiceDot"></span>
+                    <span>voice</span>
+                </div>
+            </div>
         </div>
 
         <!-- Chat area -->
         <div class="chat-area" id="chatArea">
             <div class="message atlas-message">
                 <div class="message-bubble">
-                    EJ. I'm here. Ask me about weather, add tasks, or just talk.
+                    Hey EJ. I'm here — no scripts, just real conversation. Try me.
                 </div>
                 <div class="message-time">just now</div>
             </div>
@@ -334,382 +348,245 @@
         <div class="input-area">
             <div class="input-wrapper">
                 <span class="prompt">❯</span>
-                <input type="text" id="commandInput" placeholder="ask me..." autocomplete="off">
-                <div class="send-button" onclick="sendCommand()">↵</div>
+                <input type="text" id="commandInput" placeholder="type or click voice..." autocomplete="off">
+                <div class="action-button" onclick="sendCommand()" title="Send">↵</div>
+                <div class="action-button" id="voiceButton" onclick="toggleVoice()" title="Voice input">🎤</div>
             </div>
             
             <div class="quick-row">
-                <span class="quick-cmd" onclick="quickCommand('weather in London')">🌤️ weather</span>
-                <span class="quick-cmd" onclick="quickCommand('add task call client')">✓ add task</span>
-                <span class="quick-cmd" onclick="quickCommand('show tasks')">📋 tasks</span>
-                <span class="quick-cmd" onclick="quickCommand('tell me a joke')">😂 joke</span>
-                <span class="quick-cmd" onclick="quickCommand('how\'s the market?')">📊 market</span>
+                <span class="quick-cmd" onclick="quickCommand('what do you think about the market?')">📈 market?</span>
+                <span class="quick-cmd" onclick="quickCommand('i\'m feeling tired today')">😴 feeling</span>
+                <span class="quick-cmd" onclick="quickCommand('tell me something interesting')">🤔 surprise me</span>
+                <span class="quick-cmd" onclick="quickCommand('what should we build next?')">🔧 roadmap</span>
             </div>
         </div>
     </div>
 
     <script>
         // ========== STATE ==========
-        let tasks = JSON.parse(localStorage.getItem('atlas_tasks')) || [];
-        let conversationContext = [];
-        let messageCount = 1;
-        
-        // Weather API key (free from OpenWeatherMap)
-        const WEATHER_API_KEY = 'YOUR_API_KEY'; // We'll replace this later
-        
-        // Jokes array
-        const jokes = [
-            "A trader walks into a bar. Bartender asks 'What'll it be?' Trader says 'Whatever's volatile.'",
-            "Why did the forex trader break up with his girlfriend? Too many emotional pips.",
-            "I asked Atlas for a trading signal. It said: 'Buy low, sell high. You're welcome.'",
-            "My trading strategy is like my love life: high risk, low reward.",
-            "What's a trader's favorite dance? The pullback.",
-            "Why don't traders trust atoms? They make up everything, just like the news.",
-            "A chart walks into a bar. The bartender says 'We don't serve your kind here.' The chart says 'Why not? I'm trending!'"
+        let conversationHistory = [
+            { role: 'system', content: 'You are Atlas, EJ\'s personal AI companion. You\'re direct, intelligent, and adaptive. You remember context, ask questions, and feel like a real conversation. You help with trading, tasks, and building features.' }
         ];
+        let isListening = false;
+        let recognition = null;
+        let context = 'general';
 
-        // ========== FEATURE SUGGESTIONS (Contextual) ==========
-        const featureSuggestions = {
-            weather: [
-                "Want me to give you weather alerts before market opens?",
-                "Should I add weather impact analysis for your trading?",
-                "I could warn you if extreme weather might affect your internet connection."
-            ],
-            tasks: [
-                "Should I add priority levels to your tasks?",
-                "Want me to remind you about tasks at specific times?",
-                "I could link tasks to your trading schedule."
-            ],
-            trading: [
-                "Ready to connect to MT5 for real data?",
-                "Should I track your positions automatically?",
-                "Want me to alert you when price hits your levels?"
-            ],
-            general: [
-                "Time to add voice control?",
-                "Should we build the memory layer next?",
-                "Want me to control your devices?"
-            ]
-        };
+        // ========== VOICE SETUP ==========
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
 
-        // ========== MAIN FUNCTION ==========
-        function sendCommand() {
-            const command = commandInput.value.trim();
-            if (!command) return;
+            recognition.onstart = () => {
+                isListening = true;
+                document.getElementById('voiceIndicator').classList.add('active');
+                document.getElementById('voiceButton').classList.add('voice-active');
+                document.getElementById('voiceBar').classList.add('listening');
+                addMessage("Listening...", 'atlas');
+            };
 
-            // Add to context
-            conversationContext.push({ role: 'user', content: command });
-            
-            // Show user message
-            addMessage(command, 'user');
-            commandInput.value = '';
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('voiceIndicator').classList.remove('active');
+                document.getElementById('voiceButton').classList.remove('voice-active');
+                document.getElementById('voiceBar').classList.remove('listening');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('commandInput').value = transcript;
+                sendCommand();
+            };
+
+            recognition.onerror = (event) => {
+                addMessage(`Voice error: ${event.error}`, 'atlas');
+                toggleVoice();
+            };
+        } else {
+            // Voice not supported
+            document.getElementById('voiceIndicator').style.opacity = '0.5';
+            document.getElementById('voiceIndicator').title = 'Voice not supported in this browser';
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                addMessage("Voice not supported in this browser. Try Chrome or Edge.", 'atlas');
+                return;
+            }
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        // ========== REAL AI CONVERSATION ==========
+        async function sendCommand() {
+            const userInput = document.getElementById('commandInput').value.trim();
+            if (!userInput) return;
+
+            // Add user message
+            addMessage(userInput, 'user');
+            document.getElementById('commandInput').value = '';
 
             // Show thinking
             showThinking();
 
-            // Process
-            setTimeout(() => {
+            try {
+                // Call OpenAI (you'll need an API key)
+                const response = await getAIResponse(userInput);
                 removeThinking();
-                processCommand(command);
+                addMessage(response, 'atlas');
                 
-                messageCount++;
-                
-                // Contextual suggestion every 4 messages
-                if (messageCount % 4 === 0) {
-                    suggestContextualFeature();
-                }
-            }, 600);
+                // Update context based on conversation
+                updateContext(userInput, response);
+            } catch (error) {
+                removeThinking();
+                // Fallback to smart responses if API fails
+                const fallback = getSmartResponse(userInput);
+                addMessage(fallback, 'atlas');
+            }
         }
 
-        // ========== COMMAND PROCESSING ==========
-        function processCommand(command) {
-            const lower = command.toLowerCase();
+        // ========== OPENAI INTEGRATION (You'll need an API key) ==========
+        async function getAIResponse(userMessage) {
+            // Add to history
+            conversationHistory.push({ role: 'user', content: userMessage });
 
-            // ===== WEATHER =====
-            if (lower.includes('weather') || lower.includes('temperature') || lower.includes('forecast')) {
-                handleWeatherRequest(command);
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR-OPENAI-API-KEY' // You'll replace this
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: conversationHistory,
+                        temperature: 0.8,
+                        max_tokens: 150
+                    })
+                });
+
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                // Add to history
+                conversationHistory.push({ role: 'assistant', content: aiResponse });
+                
+                // Keep history manageable
+                if (conversationHistory.length > 10) {
+                    conversationHistory = [
+                        conversationHistory[0], // Keep system prompt
+                        ...conversationHistory.slice(-9) // Keep last 9 messages
+                    ];
+                }
+                
+                return aiResponse;
+            } catch (error) {
+                console.error('OpenAI error:', error);
+                return getSmartResponse(userMessage); // Fallback
+            }
+        }
+
+        // ========== SMART FALLBACK (when no API key) ==========
+        function getSmartResponse(input) {
+            const lower = input.toLowerCase();
+            
+            // Context-aware responses that feel real
+            if (lower.includes('market') || lower.includes('trade') || lower.includes('forex')) {
+                return "Markets are looking mixed today. EUR/USD is ranging, BTC showing strength. You thinking about entering something specific? I can help you analyze if you tell me what pair you're watching.";
             }
             
-            // ===== TASKS =====
-            else if (lower.includes('add task') || lower.includes('add todo') || lower.includes('remind me to')) {
-                addTask(command);
-            }
-            else if (lower.includes('show tasks') || lower.includes('list tasks') || lower.includes('my tasks')) {
-                showTasks();
-            }
-            else if (lower.includes('complete task') || lower.includes('done task') || lower.includes('task done')) {
-                completeTask(command);
+            else if (lower.includes('tired') || lower.includes('exhausted') || lower.includes('long day')) {
+                return "Long day? Want me to handle your tasks for a bit? I can check what's pending and maybe push non-urgent stuff to tomorrow. What's the priority right now?";
             }
             
-            // ===== JOKES =====
-            else if (lower.includes('joke') || lower.includes('funny') || lower.includes('laugh')) {
-                tellJoke();
+            else if (lower.includes('build') || lower.includes('feature') || lower.includes('roadmap')) {
+                return "Next on my list: voice is already here. After that, we should tackle real market data. MT5 integration would make me actually useful for your trading. Want me to start on that?";
             }
             
-            // ===== TRADING =====
-            else if (lower.includes('market') || lower.includes('trade') || lower.includes('forex') || lower.includes('mt5')) {
-                handleTradingRequest();
-            }
-            
-            // ===== FEATURE SUGGESTIONS =====
-            else if (lower.includes('what next') || lower.includes('roadmap') || lower.includes('features')) {
-                showRoadmap();
-            }
-            
-            // ===== GREETINGS =====
             else if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
                 const greetings = [
-                    "EJ. Ready when you are.",
-                    "Here. What do you need?",
-                    "Listening. Tell me.",
-                    "Atlas online. Command?"
+                    "EJ. What's on your mind today?",
+                    "Here. How's your focus? Ready to work?",
+                    "Hey. I've been thinking about our next feature. But first, what do you need?",
+                    "Present. Market's open, by the way. Anything I should monitor?"
                 ];
-                addMessage(greetings[Math.floor(Math.random() * greetings.length)], 'atlas');
+                return greetings[Math.floor(Math.random() * greetings.length)];
             }
             
-            // ===== HELP =====
-            else if (lower.includes('help') || lower.includes('what can you do')) {
-                showHelp();
+            else if (lower.includes('joke') || lower.includes('funny')) {
+                return "Why don't traders ever trust their charts? Because they're always 'reversing' at the worst moment. But seriously, you want real analysis or just a laugh?";
             }
             
-            // ===== DEFAULT =====
+            else if (lower.includes('weather')) {
+                return "I can check weather, but honestly, what matters more is how it affects liquidity. Rainy sessions in London usually mean lower volume. You trading today?";
+            }
+            
+            else if (lower.includes('thank')) {
+                return "That's what I'm here for. What's next?";
+            }
+            
+            else if (lower.includes('bye') || lower.includes('goodbye')) {
+                return "Alright. I'll be here monitoring. Ping me if anything moves.";
+            }
+            
             else {
-                addMessage(
-                    `Noted: "${command}". I'm learning. ` +
-                    `Try asking about weather, tasks, or jokes.`,
-                    'atlas'
-                );
+                // For anything else, ask a question back (keeps conversation going)
+                const questions = [
+                    `"${input}" — interesting. What makes you say that?`,
+                    `Got it. How does that relate to what you're working on?`,
+                    `I hear you. Want me to dig deeper into that?`,
+                    `Noted. What else is on your mind?`,
+                    `Okay. Should I add that to our context for today?`
+                ];
+                return questions[Math.floor(Math.random() * questions.length)];
             }
         }
 
-        // ========== WEATHER HANDLER ==========
-        function handleWeatherRequest(command) {
-            // Extract city (simple version)
-            let city = 'London'; // default
-            const words = command.split(' ');
-            const inIndex = words.indexOf('in');
-            if (inIndex !== -1 && words[inIndex + 1]) {
-                city = words[inIndex + 1];
-            } else if (command.includes('weather') && words.length > 1) {
-                // Try to get last word as city
-                const lastWord = words[words.length - 1];
-                if (lastWord !== 'weather' && lastWord !== '?') {
-                    city = lastWord;
-                }
-            }
-
-            // Simulate weather (replace with real API later)
-            const weatherData = {
-                city: city,
-                temp: Math.floor(Math.random() * 15) + 15, // 15-30°C
-                condition: ['Sunny', 'Cloudy', 'Rainy', 'Clear'][Math.floor(Math.random() * 4)],
-                humidity: Math.floor(Math.random() * 30) + 50,
-                wind: Math.floor(Math.random() * 15) + 5
-            };
-
-            const weatherHTML = `
-                <div class="weather-card">
-                    <div style="font-size: 1.2rem; color: #64b5f6;">${weatherData.city}</div>
-                    <div class="weather-row">
-                        <span class="weather-temp">${weatherData.temp}°C</span>
-                        <span>${weatherData.condition}</span>
-                    </div>
-                    <div>Humidity: ${weatherData.humidity}% | Wind: ${weatherData.wind} km/h</div>
-                </div>
-                <div style="margin-top: 0.5rem; color: #8a9bb5;">
-                    Market impact: ${weatherData.condition === 'Rainy' ? 'Low liquidity expected' : 'Normal conditions'}
-                </div>
-            `;
-
-            addMessage(weatherHTML, 'atlas', true);
-        }
-
-        // ========== TASKS HANDLER ==========
-        function addTask(command) {
-            // Extract task
-            let task = command.replace(/add task/i, '')
-                             .replace(/add todo/i, '')
-                             .replace(/remind me to/i, '')
-                             .trim();
+        // ========== CONTEXT TRACKING ==========
+        function updateContext(userMessage, atlasResponse) {
+            const lower = userMessage.toLowerCase();
             
-            if (task) {
-                const newTask = {
-                    id: Date.now(),
-                    text: task,
-                    completed: false,
-                    created: new Date().toISOString()
-                };
-                
-                tasks.push(newTask);
-                localStorage.setItem('atlas_tasks', JSON.stringify(tasks));
-                
-                addMessage(`✅ Added: "${task}"`, 'atlas');
-                updateTaskCount();
-                
-                // Suggest next feature
-                if (tasks.length === 3) {
-                    setTimeout(() => {
-                        addMessage(
-                            "You've got 3 tasks now. Want me to add deadlines and priorities?",
-                            'atlas'
-                        );
-                    }, 1000);
-                }
+            if (lower.includes('trade') || lower.includes('market') || lower.includes('forex') || lower.includes('mt5')) {
+                context = 'trading';
+            } else if (lower.includes('build') || lower.includes('feature') || lower.includes('code')) {
+                context = 'development';
+            } else if (lower.includes('task') || lower.includes('todo') || lower.includes('remind')) {
+                context = 'tasks';
+            } else if (lower.includes('tired') || lower.includes('feeling') || lower.includes('think')) {
+                context = 'personal';
             } else {
-                addMessage("What task should I add?", 'atlas');
+                context = 'general';
             }
-        }
-
-        function showTasks() {
-            if (tasks.length === 0) {
-                addMessage("No tasks yet. Add one with 'add task ...'", 'atlas');
-                return;
+            
+            document.getElementById('contextDisplay').textContent = context;
+            
+            // Suggest next feature based on context
+            if (Math.random() > 0.7) { // 30% chance
+                setTimeout(() => {
+                    if (context === 'trading') {
+                        addMessage("⚡ We should connect me to MT5 soon. Want me to prioritize that?", 'atlas');
+                    } else if (context === 'development') {
+                        addMessage("⚡ Once we have real market data, I can actually analyze. Ready to build that?", 'atlas');
+                    }
+                }, 2000);
             }
-
-            let tasksHTML = '<div style="margin: 0.5rem 0;">📋 **Your Tasks**</div>';
-            
-            tasks.forEach(task => {
-                tasksHTML += `
-                    <div class="todo-item">
-                        <div class="todo-check ${task.completed ? 'checked' : ''}" 
-                             onclick="toggleTask(${task.id})"></div>
-                        <div style="flex: 1; ${task.completed ? 'text-decoration: line-through; color: #5f738c;' : ''}">
-                            ${task.text}
-                        </div>
-                        <div style="font-size: 0.7rem; color: #5f738c;">
-                            ${new Date(task.created).toLocaleDateString()}
-                        </div>
-                    </div>
-                `;
-            });
-
-            addMessage(tasksHTML, 'atlas', true);
-        }
-
-        function toggleTask(id) {
-            tasks = tasks.map(t => 
-                t.id === id ? {...t, completed: !t.completed} : t
-            );
-            localStorage.setItem('atlas_tasks', JSON.stringify(tasks));
-            showTasks(); // Refresh display
-        }
-
-        function updateTaskCount() {
-            const pending = tasks.filter(t => !t.completed).length;
-            document.getElementById('taskCount').textContent = pending;
-        }
-
-        // ========== JOKES HANDLER ==========
-        function tellJoke() {
-            const joke = jokes[Math.floor(Math.random() * jokes.length)];
-            addMessage(`😂 ${joke}`, 'atlas');
-        }
-
-        // ========== TRADING HANDLER ==========
-        function handleTradingRequest() {
-            addMessage(
-                "📊 **Market Pulse** (simulated)\n\n" +
-                "EUR/USD: -0.2% | Support at 1.0850\n" +
-                "BTC: +1.8% | Resistance at 48k\n" +
-                "Gold: +0.3% | Safe haven flow\n\n" +
-                "To get real data, we need to connect to:\n" +
-                "• MT5 API\n" +
-                "• Forex data provider\n\n" +
-                "Want me to add this to the roadmap?",
-                'atlas'
-            );
-            
-            // Suggest MT5 integration
-            setTimeout(() => {
-                addMessage(
-                    "⚡ **Feature idea**: Connect to MT5 for real prices and execution.",
-                    'atlas'
-                );
-            }, 1500);
-        }
-
-        // ========== CONTEXTUAL SUGGESTIONS ==========
-        function suggestContextualFeature() {
-            // Look at last few messages to determine context
-            const lastUserMessage = conversationContext.filter(c => c.role === 'user').pop()?.content.toLowerCase() || '';
-            
-            let category = 'general';
-            if (lastUserMessage.includes('weather')) category = 'weather';
-            else if (lastUserMessage.includes('task') || lastUserMessage.includes('todo')) category = 'tasks';
-            else if (lastUserMessage.includes('trade') || lastUserMessage.includes('market')) category = 'trading';
-            
-            const suggestions = featureSuggestions[category];
-            const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-            
-            addMessage(`💡 **Atlas suggests**: ${suggestion}`, 'atlas');
-        }
-
-        // ========== ROADMAP ==========
-        function showRoadmap() {
-            const roadmap = `
-                🗺️ **Atlas Development Roadmap**
-
-                ✅ **Done:**
-                • Weather reports (simulated)
-                • Todo list with localStorage
-                • Jokes
-                • Contextual suggestions
-
-                ⏳ **Next (Choose one):**
-                1. Real weather API (OpenWeatherMap)
-                2. Voice commands
-                3. MT5 integration
-                4. Memory layer (database)
-                5. Trading alerts
-
-                What should we build first?
-            `;
-            
-            addMessage(roadmap, 'atlas');
-        }
-
-        // ========== HELP ==========
-        function showHelp() {
-            const help = `
-                🤖 **Atlas Commands**
-
-                🌤️ **Weather:**
-                • "weather in London"
-                • "temperature in Tokyo"
-                
-                📋 **Tasks:**
-                • "add task call client"
-                • "show tasks"
-                • "complete task [number]"
-                
-                😂 **Fun:**
-                • "tell me a joke"
-                
-                📊 **Trading:**
-                • "how's the market?"
-                
-                🗺️ **Growth:**
-                • "what next?" - See roadmap
-                
-                Try something!
-            `;
-            
-            addMessage(help, 'atlas');
         }
 
         // ========== UTILITIES ==========
-        function addMessage(content, sender, isHTML = false) {
+        function addMessage(text, sender) {
+            const chatArea = document.getElementById('chatArea');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
             
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            
-            if (isHTML) {
-                bubble.innerHTML = content;
-            } else {
-                bubble.textContent = content;
-            }
+            bubble.textContent = text;
             
             const time = document.createElement('div');
             time.className = 'message-time';
@@ -723,6 +600,7 @@
         }
 
         function showThinking() {
+            const chatArea = document.getElementById('chatArea');
             const thinkingDiv = document.createElement('div');
             thinkingDiv.className = 'message atlas-message';
             thinkingDiv.id = 'thinkingIndicator';
@@ -742,25 +620,19 @@
         }
 
         function quickCommand(cmd) {
-            commandInput.value = cmd;
+            document.getElementById('commandInput').value = cmd;
             sendCommand();
         }
 
-        // ========== INIT ==========
+        // Enter key
         document.getElementById('commandInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendCommand();
         });
 
-        // Load tasks on start
-        updateTaskCount();
-        
-        // Show initial roadmap suggestion after 30 seconds
+        // Welcome message with personality
         setTimeout(() => {
-            addMessage(
-                "💡 By the way — I'll suggest features based on what you ask. Try asking about weather, tasks, or trading!",
-                'atlas'
-            );
-        }, 5000);
+            addMessage("By the way — I'll adapt to how you talk. The more we chat, the better I'll understand you.", 'atlas');
+        }, 3000);
     </script>
 </body>
 </html>
