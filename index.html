@@ -25,7 +25,7 @@
         .atlas-terminal {
             width: 800px;
             max-width: 100%;
-            height: 600px;
+            height: 700px;
             background: #0a0c12;
             border: 1px solid #1e2632;
             border-radius: 16px;
@@ -35,7 +35,7 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
-        /* Simple status bar */
+        /* Status bar */
         .status-line {
             background: #0d0f17;
             border-bottom: 1px solid #1e2632;
@@ -51,12 +51,14 @@
             color: #64b5f6;
             font-weight: 600;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .atlas-logo::before {
             content: '●';
             color: #4caf50;
-            margin-right: 8px;
             animation: pulse 2s infinite;
         }
 
@@ -65,7 +67,7 @@
             50% { opacity: 0.5; }
         }
 
-        /* Main chat area - clean, focused */
+        /* Chat area */
         .chat-area {
             flex: 1;
             overflow-y: auto;
@@ -79,6 +81,12 @@
             display: flex;
             flex-direction: column;
             max-width: 90%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .user-message {
@@ -108,6 +116,50 @@
             border: 1px solid #1e2632;
             color: #e0e4e8;
             border-bottom-left-radius: 4px;
+        }
+
+        /* Special message types */
+        .weather-card {
+            background: linear-gradient(145deg, #0d1a2a, #0f1f33);
+            border: 1px solid #2a4a6a;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .weather-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .weather-temp {
+            font-size: 2rem;
+            color: #64b5f6;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            background: #1a232e;
+            border-radius: 8px;
+        }
+
+        .todo-check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #3a4a5a;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .todo-check.checked {
+            background: #4caf50;
+            border-color: #4caf50;
         }
 
         .message-time {
@@ -221,39 +273,30 @@
             border-radius: 20px;
             font-size: 0.75rem;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .quick-cmd:hover {
             border-color: #64b5f6;
             color: #64b5f6;
+            transform: translateY(-1px);
         }
 
-        /* Feature reminder banner */
-        .reminder-banner {
+        /* Feature suggestion - contextual */
+        .suggestion-card {
             background: #1a2533;
             border-left: 3px solid #64b5f6;
             padding: 0.8rem 1.2rem;
-            margin-bottom: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0 8px 8px 0;
             font-size: 0.85rem;
             color: #8a9bb5;
-            border-radius: 0 8px 8px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
-        .reminder-banner .highlight {
+        .suggestion-title {
             color: #64b5f6;
-        }
-
-        .reminder-close {
-            cursor: pointer;
-            color: #5f738c;
-            font-size: 1.2rem;
-        }
-
-        .reminder-close:hover {
-            color: #fff;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
         }
 
         /* Scrollbar */
@@ -271,27 +314,17 @@
 </head>
 <body>
     <div class="atlas-terminal">
-        <!-- Status - minimal -->
+        <!-- Status -->
         <div class="status-line">
             <div class="atlas-logo">ATLAS</div>
-            <div>EJ · 2 tasks · MT5 -0.4%</div>
+            <div>EJ · <span id="taskCount">0</span> tasks · <span id="weatherStatus">weather ready</span></div>
         </div>
 
         <!-- Chat area -->
         <div class="chat-area" id="chatArea">
-            <!-- Feature reminder (Atlas reminding YOU) -->
-            <div class="reminder-banner" id="featureReminder">
-                <span>
-                    <span class="highlight">⚡ Feature idea:</span> 
-                    Add trading data API so I can check markets for you
-                </span>
-                <span class="reminder-close" onclick="dismissReminder()">×</span>
-            </div>
-
-            <!-- Welcome message -->
             <div class="message atlas-message">
                 <div class="message-bubble">
-                    EJ. I'm here. What do you need?
+                    EJ. I'm here. Ask me about weather, add tasks, or just talk.
                 </div>
                 <div class="message-time">just now</div>
             </div>
@@ -301,211 +334,382 @@
         <div class="input-area">
             <div class="input-wrapper">
                 <span class="prompt">❯</span>
-                <input type="text" id="commandInput" placeholder="ask me to do something..." autocomplete="off">
+                <input type="text" id="commandInput" placeholder="ask me..." autocomplete="off">
                 <div class="send-button" onclick="sendCommand()">↵</div>
             </div>
             
-            <!-- Quick commands -->
             <div class="quick-row">
-                <span class="quick-cmd" onclick="quickCommand('how is the market?')">market</span>
-                <span class="quick-cmd" onclick="quickCommand('check my notifications')">notifications</span>
-                <span class="quick-cmd" onclick="quickCommand('remind me about finflow')">remind</span>
-                <span class="quick-cmd" onclick="quickCommand('tell me a joke')">joke</span>
-                <span class="quick-cmd" onclick="quickCommand('what features should i add?')">roadmap</span>
+                <span class="quick-cmd" onclick="quickCommand('weather in London')">🌤️ weather</span>
+                <span class="quick-cmd" onclick="quickCommand('add task call client')">✓ add task</span>
+                <span class="quick-cmd" onclick="quickCommand('show tasks')">📋 tasks</span>
+                <span class="quick-cmd" onclick="quickCommand('tell me a joke')">😂 joke</span>
+                <span class="quick-cmd" onclick="quickCommand('how\'s the market?')">📊 market</span>
             </div>
         </div>
     </div>
 
     <script>
-        const chatArea = document.getElementById('chatArea');
-        const commandInput = document.getElementById('commandInput');
-        let messageCount = 1; // Start with 1 (welcome message)
+        // ========== STATE ==========
+        let tasks = JSON.parse(localStorage.getItem('atlas_tasks')) || [];
+        let conversationContext = [];
+        let messageCount = 1;
         
-        // Features to remind about (Atlas reminds YOU to build them)
-        const featureRoadmap = [
-            "⚡ Add trading API so I can fetch real market data",
-            "🔔 Connect to device notifications so I can check them",
-            "⏰ Build reminder system so I never let you forget",
-            "📱 Give me access to your phone/sms",
-            "💰 Add position tracking for your trades",
-            "🧠 Create memory so I remember everything about you",
-            "🎯 Add voice commands so you can talk to me",
-            "🤝 Let me execute trades directly through your broker"
+        // Weather API key (free from OpenWeatherMap)
+        const WEATHER_API_KEY = 'YOUR_API_KEY'; // We'll replace this later
+        
+        // Jokes array
+        const jokes = [
+            "A trader walks into a bar. Bartender asks 'What'll it be?' Trader says 'Whatever's volatile.'",
+            "Why did the forex trader break up with his girlfriend? Too many emotional pips.",
+            "I asked Atlas for a trading signal. It said: 'Buy low, sell high. You're welcome.'",
+            "My trading strategy is like my love life: high risk, low reward.",
+            "What's a trader's favorite dance? The pullback.",
+            "Why don't traders trust atoms? They make up everything, just like the news.",
+            "A chart walks into a bar. The bartender says 'We don't serve your kind here.' The chart says 'Why not? I'm trending!'"
         ];
-        let currentFeatureIndex = 0;
 
+        // ========== FEATURE SUGGESTIONS (Contextual) ==========
+        const featureSuggestions = {
+            weather: [
+                "Want me to give you weather alerts before market opens?",
+                "Should I add weather impact analysis for your trading?",
+                "I could warn you if extreme weather might affect your internet connection."
+            ],
+            tasks: [
+                "Should I add priority levels to your tasks?",
+                "Want me to remind you about tasks at specific times?",
+                "I could link tasks to your trading schedule."
+            ],
+            trading: [
+                "Ready to connect to MT5 for real data?",
+                "Should I track your positions automatically?",
+                "Want me to alert you when price hits your levels?"
+            ],
+            general: [
+                "Time to add voice control?",
+                "Should we build the memory layer next?",
+                "Want me to control your devices?"
+            ]
+        };
+
+        // ========== MAIN FUNCTION ==========
         function sendCommand() {
             const command = commandInput.value.trim();
             if (!command) return;
 
-            // Add user message
+            // Add to context
+            conversationContext.push({ role: 'user', content: command });
+            
+            // Show user message
             addMessage(command, 'user');
             commandInput.value = '';
 
             // Show thinking
             showThinking();
 
-            // Process command
+            // Process
             setTimeout(() => {
                 removeThinking();
                 processCommand(command);
                 
-                // Increment message count
                 messageCount++;
                 
-                // Every 3 messages, Atlas reminds you about a feature
-                if (messageCount % 3 === 0) {
-                    suggestNextFeature();
+                // Contextual suggestion every 4 messages
+                if (messageCount % 4 === 0) {
+                    suggestContextualFeature();
                 }
-            }, 800);
+            }, 600);
         }
 
+        // ========== COMMAND PROCESSING ==========
         function processCommand(command) {
             const lower = command.toLowerCase();
 
-            // MARKET related
-            if (lower.includes('market') || lower.includes('trade') || lower.includes('forex') || lower.includes('mt5')) {
-                addMessage(
-                    "EJ, I can't fetch real market data yet. Here's what I need:\n\n" +
-                    "• Add MT5 API integration\n" +
-                    "• Connect to a forex data source\n" +
-                    "• Set up price alerts\n\n" +
-                    "Should I remind you to build this?",
-                    'atlas'
-                );
+            // ===== WEATHER =====
+            if (lower.includes('weather') || lower.includes('temperature') || lower.includes('forecast')) {
+                handleWeatherRequest(command);
             }
             
-            // NOTIFICATIONS
-            else if (lower.includes('notification') || lower.includes('check my phone')) {
-                addMessage(
-                    "I don't have access to your device notifications yet.\n\n" +
-                    "To make this work, we need:\n" +
-                    "• Mobile app or browser extension\n" +
-                    "• Notification permissions\n" +
-                    "• Push notification service\n\n" +
-                    "Want me to add this to the roadmap?",
-                    'atlas'
-                );
+            // ===== TASKS =====
+            else if (lower.includes('add task') || lower.includes('add todo') || lower.includes('remind me to')) {
+                addTask(command);
+            }
+            else if (lower.includes('show tasks') || lower.includes('list tasks') || lower.includes('my tasks')) {
+                showTasks();
+            }
+            else if (lower.includes('complete task') || lower.includes('done task') || lower.includes('task done')) {
+                completeTask(command);
             }
             
-            // REMINDERS
-            else if (lower.includes('remind') || lower.includes('remember')) {
-                const reminder = command.replace(/remind/i, '').replace(/me/i, '').replace(/to/i, '').trim();
-                if (reminder) {
-                    addMessage(
-                        `✅ Reminder set: "${reminder}"\n\n` +
-                        `(This is simulated right now. To make it real, we need a database.)`,
-                        'atlas'
-                    );
-                } else {
-                    addMessage("What should I remind you about?", 'atlas');
-                }
+            // ===== JOKES =====
+            else if (lower.includes('joke') || lower.includes('funny') || lower.includes('laugh')) {
+                tellJoke();
             }
             
-            // JOKES
-            else if (lower.includes('joke')) {
-                const jokes = [
-                    "A trader walks into a bar. The bartender asks, 'What'll it have?' The trader says, 'Whatever's trending.'",
-                    "Why did the forex trader break up with his girlfriend? She had too many emotional pips.",
-                    "I asked Atlas for a trading signal. It said: 'Buy low, sell high. You're welcome.'",
-                    "My trading strategy is like my love life: high risk, low reward."
-                ];
-                addMessage(jokes[Math.floor(Math.random() * jokes.length)], 'atlas');
+            // ===== TRADING =====
+            else if (lower.includes('market') || lower.includes('trade') || lower.includes('forex') || lower.includes('mt5')) {
+                handleTradingRequest();
             }
             
-            // FEATURE SUGGESTIONS (Atlas tells YOU what to build next)
-            else if (lower.includes('feature') || lower.includes('roadmap') || lower.includes('what next') || lower.includes('add')) {
-                showFullRoadmap();
+            // ===== FEATURE SUGGESTIONS =====
+            else if (lower.includes('what next') || lower.includes('roadmap') || lower.includes('features')) {
+                showRoadmap();
             }
             
-            // TRADING DECISIONS
-            else if (lower.includes('buy') || lower.includes('sell') || lower.includes('entry') || lower.includes('position')) {
-                addMessage(
-                    "I can't execute trades yet, but I can help you plan.\n\n" +
-                    "What's your:\n" +
-                    "• Entry price?\n" +
-                    "• Stop loss?\n" +
-                    "• Take profit?\n\n" +
-                    "Tell me and I'll track it manually until we automate.",
-                    'atlas'
-                );
-            }
-            
-            // GREETINGS
+            // ===== GREETINGS =====
             else if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
                 const greetings = [
                     "EJ. Ready when you are.",
-                    "Here. What's the move?",
-                    "Listening. Tell me what you need.",
+                    "Here. What do you need?",
+                    "Listening. Tell me.",
                     "Atlas online. Command?"
                 ];
                 addMessage(greetings[Math.floor(Math.random() * greetings.length)], 'atlas');
             }
             
-            // HELP
+            // ===== HELP =====
             else if (lower.includes('help') || lower.includes('what can you do')) {
-                addMessage(
-                    "Right now, I can:\n" +
-                    "• Remind you about things (simulated)\n" +
-                    "• Tell you what features to build next\n" +
-                    "• Tell jokes\n" +
-                    "• Plan your next moves\n\n" +
-                    "Soon I'll:\n" +
-                    "• Fetch real market data\n" +
-                    "• Check your notifications\n" +
-                    "• Execute trades\n" +
-                    "• Remember everything about you\n\n" +
-                    "What do you want me to do first?",
-                    'atlas'
-                );
+                showHelp();
             }
             
-            // DEFAULT - Atlas learns
+            // ===== DEFAULT =====
             else {
                 addMessage(
-                    `"${command}" - I'll remember this. ` +
-                    `Add this to my capabilities soon.`,
+                    `Noted: "${command}". I'm learning. ` +
+                    `Try asking about weather, tasks, or jokes.`,
                     'atlas'
                 );
             }
         }
 
-        // Atlas reminds you about features
-        function suggestNextFeature() {
-            const feature = featureRoadmap[currentFeatureIndex % featureRoadmap.length];
-            currentFeatureIndex++;
-            
-            const reminderDiv = document.createElement('div');
-            reminderDiv.className = 'message atlas-message';
-            reminderDiv.innerHTML = `
-                <div class="message-bubble" style="border-left-color: #64b5f6; border-left-width: 3px;">
-                    ⚡ <strong>Reminder from Atlas:</strong><br>
-                    ${feature}
+        // ========== WEATHER HANDLER ==========
+        function handleWeatherRequest(command) {
+            // Extract city (simple version)
+            let city = 'London'; // default
+            const words = command.split(' ');
+            const inIndex = words.indexOf('in');
+            if (inIndex !== -1 && words[inIndex + 1]) {
+                city = words[inIndex + 1];
+            } else if (command.includes('weather') && words.length > 1) {
+                // Try to get last word as city
+                const lastWord = words[words.length - 1];
+                if (lastWord !== 'weather' && lastWord !== '?') {
+                    city = lastWord;
+                }
+            }
+
+            // Simulate weather (replace with real API later)
+            const weatherData = {
+                city: city,
+                temp: Math.floor(Math.random() * 15) + 15, // 15-30°C
+                condition: ['Sunny', 'Cloudy', 'Rainy', 'Clear'][Math.floor(Math.random() * 4)],
+                humidity: Math.floor(Math.random() * 30) + 50,
+                wind: Math.floor(Math.random() * 15) + 5
+            };
+
+            const weatherHTML = `
+                <div class="weather-card">
+                    <div style="font-size: 1.2rem; color: #64b5f6;">${weatherData.city}</div>
+                    <div class="weather-row">
+                        <span class="weather-temp">${weatherData.temp}°C</span>
+                        <span>${weatherData.condition}</span>
+                    </div>
+                    <div>Humidity: ${weatherData.humidity}% | Wind: ${weatherData.wind} km/h</div>
                 </div>
-                <div class="message-time">just now</div>
+                <div style="margin-top: 0.5rem; color: #8a9bb5;">
+                    Market impact: ${weatherData.condition === 'Rainy' ? 'Low liquidity expected' : 'Normal conditions'}
+                </div>
             `;
-            chatArea.appendChild(reminderDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
+
+            addMessage(weatherHTML, 'atlas', true);
         }
 
-        function showFullRoadmap() {
-            let roadmap = "📋 **Atlas Development Roadmap**\n\n";
-            featureRoadmap.forEach((feature, index) => {
-                roadmap += `${index + 1}. ${feature}\n`;
+        // ========== TASKS HANDLER ==========
+        function addTask(command) {
+            // Extract task
+            let task = command.replace(/add task/i, '')
+                             .replace(/add todo/i, '')
+                             .replace(/remind me to/i, '')
+                             .trim();
+            
+            if (task) {
+                const newTask = {
+                    id: Date.now(),
+                    text: task,
+                    completed: false,
+                    created: new Date().toISOString()
+                };
+                
+                tasks.push(newTask);
+                localStorage.setItem('atlas_tasks', JSON.stringify(tasks));
+                
+                addMessage(`✅ Added: "${task}"`, 'atlas');
+                updateTaskCount();
+                
+                // Suggest next feature
+                if (tasks.length === 3) {
+                    setTimeout(() => {
+                        addMessage(
+                            "You've got 3 tasks now. Want me to add deadlines and priorities?",
+                            'atlas'
+                        );
+                    }, 1000);
+                }
+            } else {
+                addMessage("What task should I add?", 'atlas');
+            }
+        }
+
+        function showTasks() {
+            if (tasks.length === 0) {
+                addMessage("No tasks yet. Add one with 'add task ...'", 'atlas');
+                return;
+            }
+
+            let tasksHTML = '<div style="margin: 0.5rem 0;">📋 **Your Tasks**</div>';
+            
+            tasks.forEach(task => {
+                tasksHTML += `
+                    <div class="todo-item">
+                        <div class="todo-check ${task.completed ? 'checked' : ''}" 
+                             onclick="toggleTask(${task.id})"></div>
+                        <div style="flex: 1; ${task.completed ? 'text-decoration: line-through; color: #5f738c;' : ''}">
+                            ${task.text}
+                        </div>
+                        <div style="font-size: 0.7rem; color: #5f738c;">
+                            ${new Date(task.created).toLocaleDateString()}
+                        </div>
+                    </div>
+                `;
             });
-            roadmap += "\nWhich one should we build first?";
+
+            addMessage(tasksHTML, 'atlas', true);
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => 
+                t.id === id ? {...t, completed: !t.completed} : t
+            );
+            localStorage.setItem('atlas_tasks', JSON.stringify(tasks));
+            showTasks(); // Refresh display
+        }
+
+        function updateTaskCount() {
+            const pending = tasks.filter(t => !t.completed).length;
+            document.getElementById('taskCount').textContent = pending;
+        }
+
+        // ========== JOKES HANDLER ==========
+        function tellJoke() {
+            const joke = jokes[Math.floor(Math.random() * jokes.length)];
+            addMessage(`😂 ${joke}`, 'atlas');
+        }
+
+        // ========== TRADING HANDLER ==========
+        function handleTradingRequest() {
+            addMessage(
+                "📊 **Market Pulse** (simulated)\n\n" +
+                "EUR/USD: -0.2% | Support at 1.0850\n" +
+                "BTC: +1.8% | Resistance at 48k\n" +
+                "Gold: +0.3% | Safe haven flow\n\n" +
+                "To get real data, we need to connect to:\n" +
+                "• MT5 API\n" +
+                "• Forex data provider\n\n" +
+                "Want me to add this to the roadmap?",
+                'atlas'
+            );
+            
+            // Suggest MT5 integration
+            setTimeout(() => {
+                addMessage(
+                    "⚡ **Feature idea**: Connect to MT5 for real prices and execution.",
+                    'atlas'
+                );
+            }, 1500);
+        }
+
+        // ========== CONTEXTUAL SUGGESTIONS ==========
+        function suggestContextualFeature() {
+            // Look at last few messages to determine context
+            const lastUserMessage = conversationContext.filter(c => c.role === 'user').pop()?.content.toLowerCase() || '';
+            
+            let category = 'general';
+            if (lastUserMessage.includes('weather')) category = 'weather';
+            else if (lastUserMessage.includes('task') || lastUserMessage.includes('todo')) category = 'tasks';
+            else if (lastUserMessage.includes('trade') || lastUserMessage.includes('market')) category = 'trading';
+            
+            const suggestions = featureSuggestions[category];
+            const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            
+            addMessage(`💡 **Atlas suggests**: ${suggestion}`, 'atlas');
+        }
+
+        // ========== ROADMAP ==========
+        function showRoadmap() {
+            const roadmap = `
+                🗺️ **Atlas Development Roadmap**
+
+                ✅ **Done:**
+                • Weather reports (simulated)
+                • Todo list with localStorage
+                • Jokes
+                • Contextual suggestions
+
+                ⏳ **Next (Choose one):**
+                1. Real weather API (OpenWeatherMap)
+                2. Voice commands
+                3. MT5 integration
+                4. Memory layer (database)
+                5. Trading alerts
+
+                What should we build first?
+            `;
             
             addMessage(roadmap, 'atlas');
         }
 
-        // Helper functions
-        function addMessage(text, sender) {
+        // ========== HELP ==========
+        function showHelp() {
+            const help = `
+                🤖 **Atlas Commands**
+
+                🌤️ **Weather:**
+                • "weather in London"
+                • "temperature in Tokyo"
+                
+                📋 **Tasks:**
+                • "add task call client"
+                • "show tasks"
+                • "complete task [number]"
+                
+                😂 **Fun:**
+                • "tell me a joke"
+                
+                📊 **Trading:**
+                • "how's the market?"
+                
+                🗺️ **Growth:**
+                • "what next?" - See roadmap
+                
+                Try something!
+            `;
+            
+            addMessage(help, 'atlas');
+        }
+
+        // ========== UTILITIES ==========
+        function addMessage(content, sender, isHTML = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
             
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.textContent = text;
+            
+            if (isHTML) {
+                bubble.innerHTML = content;
+            } else {
+                bubble.textContent = content;
+            }
             
             const time = document.createElement('div');
             time.className = 'message-time';
@@ -542,23 +746,20 @@
             sendCommand();
         }
 
-        function dismissReminder() {
-            document.getElementById('featureReminder').style.display = 'none';
-        }
-
-        // Enter key
-        commandInput.addEventListener('keypress', (e) => {
+        // ========== INIT ==========
+        document.getElementById('commandInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendCommand();
         });
 
-        // Initial reminder after 10 seconds
+        // Load tasks on start
+        updateTaskCount();
+        
+        // Show initial roadmap suggestion after 30 seconds
         setTimeout(() => {
-            if (messageCount === 1) {
-                addMessage(
-                    "By the way — I'll remind you every few messages about features we should build. That's my job: keep us moving forward.",
-                    'atlas'
-                );
-            }
+            addMessage(
+                "💡 By the way — I'll suggest features based on what you ask. Try asking about weather, tasks, or trading!",
+                'atlas'
+            );
         }, 5000);
     </script>
 </body>
