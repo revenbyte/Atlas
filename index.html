@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Atlas Assistant</title>
+            <style>
+                body { 
+                    font-family: Arial; 
+                    max-width: 600px; 
+                    margin: 50px auto; 
+                    padding: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                }
+                .container {
+                    background: rgba(255,255,255,0.1);
+                    padding: 30px;
+                    border-radius: 20px;
+                    backdrop-filter: blur(10px);
+                }
+                input, button {
+                    padding: 10px;
+                    margin: 5px;
+                    border-radius: 5px;
+                    border: none;
+                }
+                input {
+                    width: 70%;
+                }
+                button {
+                    background: #4CAF50;
+                    color: white;
+                    cursor: pointer;
+                }
+                #response {
+                    margin-top: 20px;
+                    padding: 10px;
+                    background: rgba(255,255,255,0.2);
+                    border-radius: 5px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Atlas - Your Personal Assistant</h1>
+                <p>Type something and I'll respond!</p>
+                
+                <input type="text" id="userInput" placeholder="Ask me anything...">
+                <button onclick="askAtlas()">Send</button>
+                
+                <div id="response"></div>
+            </div>
+            
+            <script>
+                async function askAtlas() {
+                    const input = document.getElementById('userInput');
+                    const response = document.getElementById('response');
+                    const message = input.value;
+                    
+                    response.innerHTML = 'Atlas is thinking...';
+                    
+                    const result = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({message: message})
+                    });
+                    
+                    const data = await result.json();
+                    response.innerHTML = '🤖 Atlas: ' + data.response;
+                    input.value = '';
+                }
+            </script>
+        </body>
+    </html>
