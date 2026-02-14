@@ -3,147 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas - Your AI Assistant</title>
+    <title>Atlas · my companion</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #e0e0e0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f0c1f 0%, #1a1a2e 100%);
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 1.5rem;
         }
 
-        /* Main container with glass morphism effect */
+        /* Main container - clean and simple */
         .container {
+            max-width: 800px;
             width: 100%;
-            max-width: 900px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
-                        0 0 0 2px rgba(0, 255, 255, 0.1) inset;
-            animation: glowPulse 3s infinite;
+            background: #111111;
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #222;
         }
 
-        @keyframes glowPulse {
-            0% { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(0, 255, 255, 0.1) inset; }
-            50% { box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3), 0 0 0 3px rgba(0, 255, 255, 0.3) inset; }
-            100% { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(0, 255, 255, 0.1) inset; }
-        }
-
-        /* Header section with arc reactor style */
+        /* Header - personal and warm */
         .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid #222;
+            padding-bottom: 1.5rem;
         }
 
-        .arc-reactor {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: radial-gradient(circle at 30% 30%, #4facfe, #00f2fe);
+        .avatar-circle {
+            width: 60px;
+            height: 60px;
+            background: #2a2a2a;
             border-radius: 50%;
-            position: relative;
-            animation: rotate 10s linear infinite;
-            box-shadow: 0 0 30px #00f2fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #3a3a3a;
+            transition: border-color 0.3s;
         }
 
-        .arc-reactor::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            background: radial-gradient(circle at 30% 30%, #fff, #4facfe);
-            border-radius: 50%;
+        .avatar-circle:hover {
+            border-color: #808080;
         }
 
-        .arc-reactor::after {
-            content: '';
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            right: 25px;
-            bottom: 25px;
-            background: #0f0c1f;
-            border-radius: 50%;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        h1 {
-            font-size: 3em;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 8px 20px;
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid #00f2fe;
-            border-radius: 50px;
-            color: #00f2fe;
-            font-size: 0.9em;
+        .avatar-initial {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #a0a0a0;
             letter-spacing: 1px;
         }
 
-        .status-dot {
+        .title-section {
+            flex: 1;
+        }
+
+        .greeting {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 0.2rem;
+        }
+
+        .name {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: #fff;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .status-badge {
+            background: #1a1a1a;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            color: #888;
+            border: 1px solid #2a2a2a;
             display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #00ff00;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 1.5s infinite;
+            margin-top: 0.3rem;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        /* Chat container */
-        .chat-container {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            min-height: 300px;
-            max-height: 400px;
+        /* Chat area - feels like conversation */
+        .chat-area {
+            background: #0d0d0d;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            min-height: 350px;
+            max-height: 450px;
             overflow-y: auto;
-            border: 1px solid rgba(0, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+            border: 1px solid #1a1a1a;
+            scroll-behavior: smooth;
         }
 
+        /* Message styling - clean and readable */
         .message {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
             display: flex;
-            align-items: flex-start;
-            animation: slideIn 0.3s ease;
+            animation: fadeIn 0.3s ease;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -151,254 +124,224 @@
             justify-content: flex-end;
         }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin: 0 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.9rem 1.4rem;
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            word-break: break-word;
         }
 
-        .user-avatar {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: #0f0c1f;
-            order: 2;
-        }
-
-        .atlas-avatar {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            color: white;
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 12px 20px;
-            border-radius: 20px;
-            font-size: 1.1em;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .user-message .message-content {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: #0f0c1f;
-            border-top-right-radius: 4px;
-        }
-
-        .atlas-message .message-content {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+        .user-message .message-bubble {
+            background: #2a2a2a;
             color: #fff;
-            border-top-left-radius: 4px;
+            border-bottom-right-radius: 0.3rem;
         }
 
-        /* Input area */
-        .input-area {
+        .atlas-message .message-bubble {
+            background: #1a1a1a;
+            color: #d0d0d0;
+            border: 1px solid #2a2a2a;
+            border-bottom-left-radius: 0.3rem;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+
+        /* Input area - feels intentional */
+        .input-wrapper {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            gap: 0.8rem;
+            background: #0d0d0d;
+            border: 1px solid #2a2a2a;
+            border-radius: 3rem;
+            padding: 0.4rem;
+            transition: border-color 0.2s;
         }
 
-        input {
+        .input-wrapper:focus-within {
+            border-color: #4a4a4a;
+        }
+
+        #userInput {
             flex: 1;
-            padding: 18px 25px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 50px;
-            color: white;
-            font-size: 1.1em;
-            transition: all 0.3s;
+            background: transparent;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            color: #fff;
+            font-size: 1rem;
             outline: none;
         }
 
-        input:focus {
-            border-color: #00f2fe;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        #userInput::placeholder {
+            color: #444;
+            font-style: italic;
         }
 
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        button {
-            padding: 18px 35px;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        .send-button {
+            background: #2a2a2a;
             border: none;
-            border-radius: 50px;
-            color: #0f0c1f;
-            font-size: 1.1em;
-            font-weight: bold;
+            color: #a0a0a0;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #00f2fe, #4facfe);
-            transition: left 0.3s;
-            z-index: -1;
-        }
-
-        button:hover::before {
-            left: 0;
-        }
-
-        /* Command suggestions */
-        .suggestions {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
+            transition: all 0.2s;
+            font-size: 1.2rem;
         }
 
-        .suggestion-chip {
-            padding: 8px 16px;
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 50px;
-            color: #00f2fe;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.3s;
+        .send-button:hover {
+            background: #3a3a3a;
+            color: #fff;
         }
 
-        .suggestion-chip:hover {
-            background: rgba(0, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* Thinking animation */
-        .thinking {
+        /* Suggestions - subtle helpers */
+        .suggestions-row {
             display: flex;
-            gap: 5px;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
         }
 
-        .thinking span {
-            width: 8px;
-            height: 8px;
-            background: #00f2fe;
+        .suggestion-item {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #2a2a2a;
+            color: #fff;
+            border-color: #3a3a3a;
+        }
+
+        /* Thinking animation - subtle */
+        .thinking-dots {
+            display: flex;
+            gap: 0.3rem;
+            padding: 0.8rem 1.2rem;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 1.2rem;
+            width: fit-content;
+        }
+
+        .thinking-dots span {
+            width: 6px;
+            height: 6px;
+            background: #666;
             border-radius: 50%;
             animation: thinking 1.4s infinite;
         }
 
-        .thinking span:nth-child(2) {
+        .thinking-dots span:nth-child(2) {
             animation-delay: 0.2s;
         }
-
-        .thinking span:nth-child(3) {
+        .thinking-dots span:nth-child(3) {
             animation-delay: 0.4s;
         }
 
         @keyframes thinking {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-            30% { transform: translateY(-10px); opacity: 1; }
+            0%, 60%, 100% { transform: translateY(0); background: #666; }
+            30% { transform: translateY(-4px); background: #999; }
         }
 
-        /* Scrollbar styling */
-        .chat-container::-webkit-scrollbar {
-            width: 8px;
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            color: #333;
+            padding: 3rem 1rem;
+            font-style: italic;
         }
 
-        .chat-container::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
+        /* Scrollbar - subtle */
+        .chat-area::-webkit-scrollbar {
+            width: 5px;
+        }
+        .chat-area::-webkit-scrollbar-track {
+            background: #0d0d0d;
+        }
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
             border-radius: 10px;
         }
 
-        .chat-container::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            border-radius: 10px;
-        }
-
-        /* Responsive design */
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .input-area {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-            }
-            
-            .message-content {
-                max-width: 80%;
-            }
+        /* Simple responsive */
+        @media (max-width: 500px) {
+            .container { padding: 1.5rem; }
+            .name { font-size: 1.8rem; }
+            .message-bubble { max-width: 90%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header - feels personal -->
         <div class="header">
-            <div class="arc-reactor"></div>
-            <h1>ATLAS</h1>
-            <div class="status">
-                <span class="status-dot"></span>
-                SYSTEM ONLINE - READY FOR COMMANDS
+            <div class="avatar-circle">
+                <span class="avatar-initial">A</span>
+            </div>
+            <div class="title-section">
+                <div class="greeting">Hey, it's</div>
+                <div class="name">Atlas</div>
+                <div class="status-badge">here with you · online</div>
             </div>
         </div>
 
-        <div class="chat-container" id="chatContainer">
+        <!-- Chat area -->
+        <div class="chat-area" id="chatArea">
             <div class="message atlas-message">
-                <div class="avatar atlas-avatar">A</div>
-                <div class="message-content">
-                    Hello, I'm Atlas. How can I assist you today?
+                <div class="message-bubble">
+                    Hey, I'm Atlas. Talk to me — I'm here to listen and learn.
                 </div>
+                <div class="message-time">just now</div>
             </div>
         </div>
 
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Enter command..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">
-                <span>EXECUTE</span>
-            </button>
+        <!-- Input -->
+        <div class="input-wrapper">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="tell me something..." 
+                autocomplete="off"
+                onkeypress="handleKeyPress(event)"
+            >
+            <button class="send-button" onclick="sendMessage()">→</button>
         </div>
 
-        <div class="suggestions">
-            <span class="suggestion-chip" onclick="useSuggestion('Hello')">Hello</span>
-            <span class="suggestion-chip" onclick="useSuggestion('What time is it?')">Time</span>
-            <span class="suggestion-chip" onclick="useSuggestion('Open Google')">Google</span>
-            <span class="suggestion-chip" onclick="useSuggestion('What is 5 + 3?')">Calculate</span>
-            <span class="suggestion-chip" onclick="useSuggestion('What\'s your name?')">Who are you?</span>
+        <!-- Suggestions -->
+        <div class="suggestions-row">
+            <span class="suggestion-item" onclick="useSuggestion('hello')">👋 hello</span>
+            <span class="suggestion-item" onclick="useSuggestion('what time is it')">⏰ time</span>
+            <span class="suggestion-item" onclick="useSuggestion('open google')">🌐 google</span>
+            <span class="suggestion-item" onclick="useSuggestion('how are you')">💭 how are you</span>
+            <span class="suggestion-item" onclick="useSuggestion('5 + 3')">🔢 5 + 3</span>
         </div>
     </div>
 
     <script>
-        const chatContainer = document.getElementById('chatContainer');
+        const chatArea = document.getElementById('chatArea');
         const userInput = document.getElementById('userInput');
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+        // Keep track of conversation
+        let messageCount = 0;
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
         }
 
         function useSuggestion(text) {
@@ -406,112 +349,160 @@
             sendMessage();
         }
 
-        function addMessage(message, isUser) {
+        function addMessage(text, isUser, customTime = null) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user-message' : 'atlas-message'}`;
             
-            const avatar = document.createElement('div');
-            avatar.className = `avatar ${isUser ? 'user-avatar' : 'atlas-avatar'}`;
-            avatar.textContent = isUser ? 'U' : 'A';
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
             
-            const content = document.createElement('div');
-            content.className = 'message-content';
-            content.textContent = message;
+            const time = document.createElement('div');
+            time.className = 'message-time';
             
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(content);
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            time.textContent = `${hours}:${minutes}`;
             
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(time);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            messageCount++;
         }
 
         function showThinking() {
             const thinkingDiv = document.createElement('div');
             thinkingDiv.className = 'message atlas-message';
-            thinkingDiv.id = 'thinkingMessage';
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'avatar atlas-avatar';
-            avatar.textContent = 'A';
+            thinkingDiv.id = 'thinkingIndicator';
             
             const thinking = document.createElement('div');
-            thinking.className = 'thinking';
+            thinking.className = 'thinking-dots';
             thinking.innerHTML = '<span></span><span></span><span></span>';
             
-            thinkingDiv.appendChild(avatar);
             thinkingDiv.appendChild(thinking);
-            
-            chatContainer.appendChild(thinkingDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatArea.appendChild(thinkingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function removeThinking() {
-            const thinking = document.getElementById('thinkingMessage');
-            if (thinking) {
-                thinking.remove();
-            }
+            const thinking = document.getElementById('thinkingIndicator');
+            if (thinking) thinking.remove();
         }
 
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
-            
+
             // Add user message
             addMessage(message, true);
             userInput.value = '';
-            
-            // Show thinking animation
+
+            // Show thinking
             showThinking();
+
+            // Simulate thinking time (more natural)
+            await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+
+            // Generate response
+            const reply = getResponse(message.toLowerCase());
             
-            // Simulate processing time
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // Process command
-            const reply = processCommand(message.toLowerCase());
-            
-            // Remove thinking and add reply
             removeThinking();
             addMessage(reply, false);
         }
 
-        function processCommand(message) {
-            if (message.includes('hello') || message.includes('hi')) {
-                return 'Hello! Atlas is here to help!';
+        function getResponse(input) {
+            // Personal greetings based on time of day
+            const hour = new Date().getHours();
+            let timeGreeting = '';
+            if (hour < 12) timeGreeting = 'morning';
+            else if (hour < 17) timeGreeting = 'afternoon';
+            else timeGreeting = 'evening';
+
+            // Simple pattern matching that feels more human
+            if (input.includes('hello') || input.includes('hi') || input.includes('hey')) {
+                const greetings = [
+                    `Hey, good ${timeGreeting}.`,
+                    `Hello there — good ${timeGreeting}.`,
+                    `Hi, how's your ${timeGreeting} going?`,
+                    `Hey, nice to hear from you.`
+                ];
+                return greetings[Math.floor(Math.random() * greetings.length)];
             }
-            else if (message.includes('your name')) {
-                return 'I am Atlas, your personal assistant!';
+            
+            else if (input.includes('how are you')) {
+                const responses = [
+                    "I'm here, that's what matters. How are you?",
+                    "Doing okay. Always better when you talk to me.",
+                    "Present and listening. That's my job.",
+                    "I'm good. Tell me what's on your mind."
+                ];
+                return responses[Math.floor(Math.random() * responses.length)];
             }
-            else if (message.includes('time')) {
+            
+            else if (input.includes('your name')) {
+                return "I'm Atlas. Just Atlas. We've got time to figure out the rest.";
+            }
+            
+            else if (input.includes('time')) {
                 const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                return `The current time is ${hours}:${minutes}`;
+                return `It's ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}.`;
             }
-            else if (message.includes('date')) {
+            
+            else if (input.includes('date') || input.includes('today')) {
                 const now = new Date();
-                return `Today is ${now.toDateString()}`;
+                const options = { weekday: 'long', month: 'long', day: 'numeric' };
+                return `Today is ${now.toLocaleDateString('en-US', options)}.`;
             }
-            else if (message.includes('open google')) {
+            
+            else if (input.includes('open google')) {
                 window.open('https://www.google.com', '_blank');
-                return 'Opening Google for you!';
+                return "Opening Google for you.";
             }
-            else if (message.includes('open youtube')) {
+            
+            else if (input.includes('open youtube')) {
                 window.open('https://www.youtube.com', '_blank');
-                return 'Opening YouTube!';
+                return "YouTube it is.";
             }
-            else if (message.includes('calculate') || message.includes('what is')) {
-                const numbers = message.match(/\d+/g);
-                if (numbers && numbers.length >= 2 && message.includes('+')) {
+            
+            else if (input.includes('+') || (input.includes('what is') && input.match(/\d+/g))) {
+                const numbers = input.match(/\d+/g);
+                if (numbers && numbers.length >= 2) {
                     const result = parseInt(numbers[0]) + parseInt(numbers[1]);
-                    return `${numbers[0]} + ${numbers[1]} = ${result}`;
-                } else {
-                    return 'I can do basic math! Try: "What is 5 + 3?"';
+                    return `${numbers[0]} + ${numbers[1]} = ${result}. Simple.`;
                 }
+                return "Give me two numbers to add.";
             }
+            
+            else if (input.includes('thanks') || input.includes('thank you')) {
+                return "Always here. Talk to me anytime.";
+            }
+            
+            else if (input.includes('bye') || input.includes('goodbye')) {
+                return "Take care. I'll be here when you're back.";
+            }
+            
             else {
-                return `I heard: "${message}". I\'m still learning! Try asking for time, date, or to open Google.`;
+                // For unrecognized commands, respond in a way that feels like it's learning
+                const fallbacks = [
+                    `"${input}" — I'll remember that. Keep teaching me.`,
+                    `Not sure I understand yet. But I'm learning.`,
+                    `Tell me more. I want to understand.`,
+                    `I heard you. Give me time, I'll learn what that means.`,
+                    `Not programmed for that yet. But I'm paying attention.`
+                ];
+                return fallbacks[Math.floor(Math.random() * fallbacks.length)];
             }
         }
+
+        // Initial message feels personal
+        setTimeout(() => {
+            if (messageCount === 0) {
+                addMessage("Been waiting for you to say something.", false);
+            }
+        }, 3000);
     </script>
 </body>
 </html>
