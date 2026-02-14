@@ -1,14 +1,15 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "atlas.py",
+      "src": "./api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "atlas.py"
+      "dest": "/api/index.py"
     }
   ]
 }
