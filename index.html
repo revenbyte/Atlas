@@ -49,25 +49,56 @@
                 
                 <div id="response"></div>
             </div>
-            
-            <script>
-                async function askAtlas() {
-                    const input = document.getElementById('userInput');
-                    const response = document.getElementById('response');
-                    const message = input.value;
-                    
-                    response.innerHTML = 'Atlas is thinking...';
-                    
-                    const result = await fetch('/chat', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({message: message})
-                    });
-                    
-                    const data = await result.json();
-                    response.innerHTML = '🤖 Atlas: ' + data.response;
-                    input.value = '';
-                }
-            </script>
+        <script> 
+            async function askAtlas() {
+    const input = document.getElementById('userInput');
+    const response = document.getElementById('response');
+    const message = input.value.toLowerCase();
+    
+    response.innerHTML = 'Atlas is thinking...';
+    
+    // Simple local responses (no server needed!)
+    let atlasReply = '';
+    
+    if (message.includes('hello') || message.includes('hi')) {
+        atlasReply = 'Hello! Atlas is here to help!';
+    }
+    else if (message.includes('your name')) {
+        atlasReply = 'I am Atlas, your personal assistant!';
+    }
+    else if (message.includes('time')) {
+        const now = new Date();
+        atlasReply = `The current time is ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+    }
+    else if (message.includes('date')) {
+        const now = new Date();
+        atlasReply = `Today is ${now.toDateString()}`;
+    }
+    else if (message.includes('open google')) {
+        window.open('https://www.google.com', '_blank');
+        atlasReply = 'Opening Google for you!';
+    }
+    else if (message.includes('open youtube')) {
+        window.open('https://www.youtube.com', '_blank');
+        atlasReply = 'Opening YouTube!';
+    }
+    else if (message.includes('calculate') || message.includes('what is')) {
+        // Simple math detection
+        const numbers = message.match(/\d+/g);
+        if (numbers && numbers.length >= 2 && message.includes('+')) {
+            const result = parseInt(numbers[0]) + parseInt(numbers[1]);
+            atlasReply = `${numbers[0]} + ${numbers[1]} = ${result}`;
+        } else {
+            atlasReply = 'I can do basic math! Try: "What is 5 + 3?"';
+        }
+    }
+    else {
+        atlasReply = `I heard you say: "${message}". I'm still learning! Try asking for time, date, or to open Google.`;
+    }
+    
+    response.innerHTML = '🤖 Atlas: ' + atlasReply;
+    input.value = '';
+}
+        </script>   
         </body>
     </html>
