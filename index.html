@@ -3,64 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas · personal OS</title>
+    <title>ATLAS OS · v1</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'SF Mono', 'Fira Code', 'Monaco', monospace;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
         }
 
         body {
-            background: #0a0c0e;
-            color: #cbd5e0;
+            background: #030305;
+            color: #e0e4e8;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
             overflow: hidden;
+            letter-spacing: 0.2px;
         }
 
-        /* Main container - feels like a terminal/dashboard hybrid */
+        /* Main OS Container */
         .atlas-os {
-            width: 1400px;
+            width: 1440px;
             max-width: 100%;
-            height: 900px;
-            max-height: 95vh;
-            background: #0f1115;
-            border: 1px solid #1e2a3a;
-            border-radius: 12px;
+            height: 960px;
+            max-height: 98vh;
+            background: #0a0c12;
+            border: 1px solid #1e2632;
+            border-radius: 16px;
             display: grid;
-            grid-template-rows: auto 1fr auto;
+            grid-template-rows: 48px 1fr;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             position: relative;
         }
 
-        /* Status bar - top */
+        /* ===== TOP STATUS BAR ===== */
         .status-bar {
-            background: #0a0c0e;
-            border-bottom: 1px solid #1e2a3a;
-            padding: 0.8rem 1.5rem;
+            background: #0d0f17;
+            border-bottom: 1px solid #1e2632;
+            padding: 0 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: 0.85rem;
-            color: #7b8c9e;
+            color: #8a9bb5;
         }
 
         .status-left {
             display: flex;
-            gap: 2rem;
             align-items: center;
+            gap: 2rem;
         }
 
         .atlas-logo {
             color: #64b5f6;
             font-weight: 600;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -69,7 +71,7 @@
         .atlas-logo::before {
             content: '●';
             color: #4caf50;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             animation: pulse 2s infinite;
         }
 
@@ -89,7 +91,16 @@
         }
 
         .status-value {
-            color: #e2e8f0;
+            color: #e0e4e8;
+        }
+
+        .mode-badge {
+            background: #1a2533;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #64b5f6;
+            border: 1px solid #2a3a4a;
         }
 
         .status-right {
@@ -97,27 +108,29 @@
             gap: 1.5rem;
         }
 
-        /* Main grid - command/output split */
+        /* ===== MAIN GRID ===== */
         .main-grid {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            height: 100%;
+            grid-template-columns: 240px 1fr;
             overflow: hidden;
+            height: 100%;
         }
 
-        /* Command panel - left */
-        .command-panel {
-            background: #0d0f13;
-            border-right: 1px solid #1e2a3a;
-            overflow-y: auto;
+        /* ===== LEFT PANEL - MODULES ===== */
+        .modules-panel {
+            background: #0b0e14;
+            border-right: 1px solid #1e2632;
             padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
 
-        .command-section {
+        .module-section {
             margin-bottom: 2rem;
         }
 
-        .command-header {
+        .module-header {
             padding: 0 1.5rem;
             margin-bottom: 0.8rem;
             font-size: 0.7rem;
@@ -127,56 +140,61 @@
             font-weight: 500;
         }
 
-        .command-item {
-            padding: 0.6rem 1.5rem;
+        .module-item {
+            padding: 0.7rem 1.5rem;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: #9aa9b9;
-            border-left: 2px solid transparent;
+            color: #8a9bb5;
+            border-left: 3px solid transparent;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
             font-size: 0.9rem;
+            margin: 2px 0;
         }
 
-        .command-item:hover {
+        .module-item:hover {
             background: #1a232e;
-            border-left-color: #64b5f6;
-            color: #e2e8f0;
+            color: #e0e4e8;
         }
 
-        .command-item.active {
+        .module-item.active {
             background: #1a232e;
             border-left-color: #64b5f6;
             color: #fff;
         }
 
-        .command-key {
+        .module-icon {
+            width: 20px;
+            text-align: center;
+            color: #4b5f73;
+        }
+
+        .module-item.active .module-icon {
             color: #64b5f6;
-            font-size: 0.8rem;
-            background: #1e2a3a;
-            padding: 2px 8px;
-            border-radius: 4px;
         }
 
-        .command-desc {
-            font-size: 0.75rem;
-            color: #5f738c;
+        .module-count {
             margin-left: auto;
+            font-size: 0.75rem;
+            background: #1e2632;
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: #8a9bb5;
         }
 
-        /* Quick stats */
+        /* Quick Stats in Left Panel */
         .quick-stats {
+            margin-top: auto;
             padding: 1.5rem;
-            border-top: 1px solid #1e2a3a;
-            margin-top: 1rem;
+            border-top: 1px solid #1e2632;
         }
 
         .stat-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 1rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .stat-label {
@@ -185,12 +203,12 @@
 
         .stat-number {
             color: #64b5f6;
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .progress-bar {
-            height: 4px;
-            background: #1e2a3a;
+        .progress-track {
+            height: 3px;
+            background: #1e2632;
             border-radius: 2px;
             margin: 0.5rem 0 1rem;
             overflow: hidden;
@@ -200,278 +218,337 @@
             height: 100%;
             background: #64b5f6;
             width: 65%;
-            border-radius: 2px;
         }
 
-        /* Output panel - right */
-        .output-panel {
-            background: #0f1115;
+        /* ===== MAIN PANEL ===== */
+        .main-panel {
+            background: #0c0f16;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .output-header {
+        /* Panel Header with Tabs */
+        .panel-header {
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid #1e2a3a;
+            border-bottom: 1px solid #1e2632;
             display: flex;
             align-items: center;
-            gap: 2rem;
-            font-size: 0.85rem;
+            justify-content: space-between;
         }
 
-        .output-tabs {
+        .view-tabs {
             display: flex;
             gap: 1.5rem;
         }
 
-        .tab {
+        .view-tab {
             color: #5f738c;
             cursor: pointer;
-            padding-bottom: 0.5rem;
+            font-size: 0.9rem;
+            padding-bottom: 0.3rem;
             border-bottom: 2px solid transparent;
         }
 
-        .tab.active {
+        .view-tab.active {
             color: #64b5f6;
             border-bottom-color: #64b5f6;
         }
 
-        .output-content {
+        .context-indicator {
+            color: #8a9bb5;
+            font-size: 0.8rem;
+            background: #1a232e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #2a3a4a;
+        }
+
+        /* Content Area */
+        .content-area {
             flex: 1;
             overflow-y: auto;
             padding: 1.5rem;
         }
 
-        /* Welcome message */
-        .welcome-message {
+        /* Dashboard View */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
             margin-bottom: 2rem;
-            line-height: 1.8;
         }
 
-        .greeting-line {
-            font-size: 1.8rem;
+        .dashboard-card {
+            background: #0a0d14;
+            border: 1px solid #1e2632;
+            border-radius: 12px;
+            padding: 1.2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #5f738c;
+            font-size: 0.8rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
             color: #fff;
-            margin-bottom: 0.5rem;
+            font-weight: 400;
+            margin-bottom: 0.3rem;
         }
 
-        .greeting-sub {
-            color: #7b8c9e;
-            font-size: 1rem;
+        .card-trend {
+            font-size: 0.75rem;
+            color: #4caf50;
         }
 
-        .highlight {
-            color: #64b5f6;
-        }
-
-        /* Tasks */
         .task-list {
-            margin: 2rem 0;
+            margin-top: 0.5rem;
         }
 
         .task-item {
-            background: #0a0c0e;
-            border: 1px solid #1e2a3a;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #1a232e;
         }
 
-        .task-status {
-            width: 8px;
-            height: 8px;
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-dot {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: #f5a623;
         }
 
-        .task-status.completed {
+        .task-dot.completed {
             background: #4caf50;
         }
 
-        .task-status.pending {
-            background: #f5a623;
+        .task-dot.high {
+            background: #ff4d4d;
         }
 
         .task-content {
             flex: 1;
-        }
-
-        .task-title {
-            color: #fff;
-            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
         }
 
         .task-meta {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #5f738c;
         }
 
-        /* Terminal area */
-        .terminal-container {
-            margin-top: 2rem;
-            background: #0a0c0e;
-            border: 1px solid #1e2a3a;
-            border-radius: 8px;
+        /* Terminal/Output View */
+        .output-container {
+            background: #0a0d14;
+            border: 1px solid #1e2632;
+            border-radius: 12px;
             overflow: hidden;
         }
 
-        .terminal-header {
-            background: #1a232e;
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid #2a3a4a;
+        .output-header {
+            background: #0d0f17;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid #1e2632;
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        .terminal-dots {
+        .output-dots {
             display: flex;
             gap: 6px;
         }
 
-        .terminal-dot {
-            width: 12px;
-            height: 12px;
+        .output-dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: #5f738c;
         }
 
-        .terminal-dot.red { background: #ff5f56; }
-        .terminal-dot.yellow { background: #ffbd2e; }
-        .terminal-dot.green { background: #27c93f; }
+        .output-dot.red { background: #ff5f56; }
+        .output-dot.yellow { background: #ffbd2e; }
+        .output-dot.green { background: #27c93f; }
 
-        .terminal-title {
-            color: #9aa9b9;
+        .output-title {
+            color: #8a9bb5;
             font-size: 0.8rem;
         }
 
-        .terminal-body {
-            padding: 1rem;
-            min-height: 150px;
-            max-height: 200px;
+        .output-body {
+            padding: 1.2rem;
+            min-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
+        }
+
+        .output-line {
+            margin-bottom: 0.8rem;
+            color: #cbd5e0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .output-prompt {
+            color: #64b5f6;
+            margin-right: 10px;
+        }
+
+        .output-card {
+            background: #0d0f17;
+            border: 1px solid #1e2632;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .output-card-title {
+            color: #64b5f6;
+            margin-bottom: 0.5rem;
             font-size: 0.9rem;
         }
 
-        .terminal-line {
-            margin-bottom: 0.5rem;
-            color: #cbd5e0;
+        .output-card-content {
+            color: #8a9bb5;
+            font-size: 0.85rem;
+            line-height: 1.6;
         }
 
-        .terminal-prompt {
-            color: #64b5f6;
-            margin-right: 10px;
+        /* Command Input */
+        .command-area {
+            padding: 1rem 1.5rem 1.5rem;
+            border-top: 1px solid #1e2632;
         }
 
-        .terminal-input-line {
+        .input-container {
             display: flex;
             align-items: center;
-            padding: 0.5rem 1rem;
-            background: #0d0f13;
-            border-top: 1px solid #1e2a3a;
+            gap: 0.5rem;
+            background: #0a0d14;
+            border: 1px solid #1e2632;
+            border-radius: 40px;
+            padding: 0.3rem 0.3rem 0.3rem 1.5rem;
         }
 
-        .terminal-prompt-symbol {
+        .input-container:focus-within {
+            border-color: #64b5f6;
+        }
+
+        .command-prompt {
             color: #64b5f6;
-            margin-right: 10px;
             font-weight: 600;
+            font-size: 1rem;
         }
 
-        #terminalInput {
+        #commandInput {
+            flex: 1;
             background: transparent;
             border: none;
             color: #fff;
-            font-family: inherit;
-            font-size: 0.9rem;
-            flex: 1;
+            font-size: 0.95rem;
+            padding: 0.8rem 0;
             outline: none;
         }
 
-        /* Quick actions - bottom */
-        .quick-actions {
-            background: #0a0c0e;
-            border-top: 1px solid #1e2a3a;
-            padding: 0.8rem 1.5rem;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+        #commandInput::placeholder {
+            color: #3a4a5a;
+            font-style: normal;
         }
 
-        .action-button {
-            background: #1a232e;
+        .command-send {
+            background: #1a2632;
             border: 1px solid #2a3a4a;
-            color: #9aa9b9;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            color: #8a9bb5;
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .action-button:hover {
+        .command-send:hover {
             background: #2a3a4a;
-            color: #fff;
+            color: #64b5f6;
             border-color: #64b5f6;
         }
 
-        .action-button.primary {
-            background: #1e3a5a;
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+            padding-left: 0.5rem;
+        }
+
+        .quick-action {
+            background: transparent;
+            border: 1px solid #1e2632;
+            color: #5f738c;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .quick-action:hover {
             border-color: #64b5f6;
             color: #64b5f6;
         }
 
-        /* Thinking animation */
-        .neural-pulse {
+        /* Thinking Animation */
+        .neural-indicator {
             display: inline-flex;
             gap: 3px;
             align-items: center;
             margin-left: 10px;
         }
 
-        .neural-pulse span {
+        .neural-indicator span {
             width: 3px;
             height: 3px;
             background: #64b5f6;
             border-radius: 50%;
-            animation: neural 1.5s infinite;
+            animation: neuralPulse 1.5s infinite;
         }
 
-        .neural-pulse span:nth-child(2) { animation-delay: 0.2s; }
-        .neural-pulse span:nth-child(3) { animation-delay: 0.4s; }
+        .neural-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .neural-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
-        @keyframes neural {
+        @keyframes neuralPulse {
             0%, 100% { opacity: 0.2; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.5); }
         }
 
-        /* Feedback animations */
-        .success-flash {
-            animation: successGlow 0.5s;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
         }
-
-        @keyframes successGlow {
-            0% { background: rgba(76, 175, 80, 0); }
-            20% { background: rgba(76, 175, 80, 0.2); }
-            100% { background: rgba(76, 175, 80, 0); }
+        ::-webkit-scrollbar-track {
+            background: #0a0d14;
         }
-
-        .error-flash {
-            animation: errorGlow 0.5s;
-        }
-
-        @keyframes errorGlow {
-            0% { background: rgba(244, 67, 54, 0); }
-            20% { background: rgba(244, 67, 54, 0.2); }
-            100% { background: rgba(244, 67, 54, 0); }
+        ::-webkit-scrollbar-thumb {
+            background: #2a3a4a;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="atlas-os">
-        <!-- Status Bar -->
+        <!-- TOP STATUS BAR -->
         <div class="status-bar">
             <div class="status-left">
                 <div class="atlas-logo">ATLAS</div>
@@ -483,15 +560,16 @@
                     <span class="status-label">time</span>
                     <span class="status-value" id="currentTime">21:47</span>
                 </div>
+                <div class="mode-badge">FOCUS MODE</div>
+            </div>
+            <div class="status-right">
                 <div class="status-item">
                     <span class="status-label">tasks</span>
                     <span class="status-value">2 pending</span>
                 </div>
-            </div>
-            <div class="status-right">
                 <div class="status-item">
                     <span class="status-label">MT5</span>
-                    <span class="status-value">-0.4%</span>
+                    <span class="status-value" style="color: #ff4d4d;">-0.4%</span>
                 </div>
                 <div class="status-item">
                     <span class="status-label">system</span>
@@ -500,51 +578,60 @@
             </div>
         </div>
 
-        <!-- Main Grid -->
+        <!-- MAIN GRID -->
         <div class="main-grid">
-            <!-- Command Panel -->
-            <div class="command-panel">
-                <div class="command-section">
-                    <div class="command-header">core commands</div>
-                    <div class="command-item active" onclick="setActiveCommand(this, '/plan')">
-                        <span class="command-key">/plan</span>
-                        <span class="command-desc">strategy</span>
+            <!-- LEFT MODULES PANEL -->
+            <div class="modules-panel">
+                <div class="module-section">
+                    <div class="module-header">core</div>
+                    <div class="module-item active" onclick="setModule(this, 'dashboard')">
+                        <span class="module-icon">⌂</span>
+                        <span>Dashboard</span>
                     </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/build')">
-                        <span class="command-key">/build</span>
-                        <span class="command-desc">projects</span>
+                    <div class="module-item" onclick="setModule(this, 'tasks')">
+                        <span class="module-icon">✓</span>
+                        <span>Tasks</span>
+                        <span class="module-count">3</span>
                     </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/trade')">
-                        <span class="command-key">/trade</span>
-                        <span class="command-desc">markets</span>
+                    <div class="module-item" onclick="setModule(this, 'projects')">
+                        <span class="module-icon">⊞</span>
+                        <span>Projects</span>
                     </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/research')">
-                        <span class="command-key">/research</span>
-                        <span class="command-desc">learn</span>
-                    </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/reflect')">
-                        <span class="command-key">/reflect</span>
-                        <span class="command-desc">journal</span>
-                    </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/system')">
-                        <span class="command-key">/system</span>
-                        <span class="command-desc">status</span>
+                    <div class="module-item" onclick="setModule(this, 'journal')">
+                        <span class="module-icon">📔</span>
+                        <span>Journal</span>
                     </div>
                 </div>
 
-                <div class="command-section">
-                    <div class="command-header">projects</div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/finflow')">
-                        <span class="command-key">finflow</span>
-                        <span class="command-desc">75%</span>
+                <div class="module-section">
+                    <div class="module-header">intelligence</div>
+                    <div class="module-item" onclick="setModule(this, 'research')">
+                        <span class="module-icon">◉</span>
+                        <span>Research</span>
                     </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/atlas-core')">
-                        <span class="command-key">atlas</span>
-                        <span class="command-desc">32%</span>
+                    <div class="module-item" onclick="setModule(this, 'learning')">
+                        <span class="module-icon">▲</span>
+                        <span>Learning</span>
                     </div>
-                    <div class="command-item" onclick="setActiveCommand(this, '/trading-bot')">
-                        <span class="command-key">trading</span>
-                        <span class="command-desc">15%</span>
+                    <div class="module-item" onclick="setModule(this, 'memory')">
+                        <span class="module-icon">◈</span>
+                        <span>Memory</span>
+                    </div>
+                </div>
+
+                <div class="module-section">
+                    <div class="module-header">systems</div>
+                    <div class="module-item" onclick="setModule(this, 'finflow')">
+                        <span class="module-icon">₿</span>
+                        <span>FinFlow</span>
+                    </div>
+                    <div class="module-item" onclick="setModule(this, 'trading')">
+                        <span class="module-icon">📊</span>
+                        <span>Trading</span>
+                    </div>
+                    <div class="module-item" onclick="setModule(this, 'settings')">
+                        <span class="module-icon">⚙</span>
+                        <span>Settings</span>
                     </div>
                 </div>
 
@@ -554,129 +641,163 @@
                         <span class="stat-number">12.4h</span>
                     </div>
                     <div class="stat-row">
-                        <span class="stat-label">tasks completed</span>
+                        <span class="stat-label">tasks</span>
                         <span class="stat-number">18/24</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 65%"></div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 75%"></div>
                     </div>
                     <div class="stat-row">
-                        <span class="stat-label">learning streak</span>
+                        <span class="stat-label">streak</span>
                         <span class="stat-number">23 days</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Output Panel -->
-            <div class="output-panel">
-                <div class="output-header">
-                    <div class="output-tabs">
-                        <div class="tab active" onclick="switchTab('terminal')">terminal</div>
-                        <div class="tab" onclick="switchTab('dashboard')">dashboard</div>
-                        <div class="tab" onclick="switchTab('memory')">memory</div>
+            <!-- MAIN PANEL -->
+            <div class="main-panel">
+                <!-- Panel Header -->
+                <div class="panel-header">
+                    <div class="view-tabs">
+                        <div class="view-tab active" onclick="switchView('terminal')">TERMINAL</div>
+                        <div class="view-tab" onclick="switchView('dashboard')">DASHBOARD</div>
+                        <div class="view-tab" onclick="switchView('graph')">GRAPH</div>
                     </div>
-                    <div class="neural-pulse" id="thinkingIndicator" style="display: none;">
-                        <span></span><span></span><span></span>
+                    <div class="context-indicator" id="contextIndicator">
+                        /dashboard
                     </div>
                 </div>
 
-                <div class="output-content" id="outputContent">
-                    <!-- Terminal View (default) -->
-                    <div id="terminalView">
-                        <div class="welcome-message">
-                            <div class="greeting-line">EJ. <span class="highlight">21:47</span></div>
-                            <div class="greeting-sub">2 unfinished tasks · MT5 volatile · FinFlow update pending</div>
+                <!-- Content Area -->
+                <div class="content-area" id="contentArea">
+                    <!-- DASHBOARD VIEW (default) -->
+                    <div id="dashboardView">
+                        <!-- Welcome Line -->
+                        <div style="margin-bottom: 2rem;">
+                            <div style="font-size: 1.8rem; color: #fff; margin-bottom: 0.3rem;">EJ.</div>
+                            <div style="color: #8a9bb5;">2 unfinished tasks · MT5 volatile · FinFlow update pending</div>
                         </div>
 
-                        <div class="task-list">
-                            <div class="task-item">
-                                <div class="task-status pending"></div>
-                                <div class="task-content">
-                                    <div class="task-title">FinFlow: Implement transaction sync</div>
-                                    <div class="task-meta">Due today · Priority high</div>
+                        <!-- Dashboard Cards -->
+                        <div class="dashboard-grid">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <span>PROJECTS</span>
+                                    <span>4 active</span>
+                                </div>
+                                <div class="card-value">75%</div>
+                                <div class="card-trend">▲ 12% this week</div>
+                                <div class="task-list" style="margin-top: 1rem;">
+                                    <div class="task-item">
+                                        <div class="task-dot high"></div>
+                                        <div class="task-content">FinFlow: Transaction sync</div>
+                                        <div class="task-meta">today</div>
+                                    </div>
+                                    <div class="task-item">
+                                        <div class="task-dot"></div>
+                                        <div class="task-content">Atlas: Memory layer</div>
+                                        <div class="task-meta">tomorrow</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="task-item">
-                                <div class="task-status pending"></div>
-                                <div class="task-content">
-                                    <div class="task-title">Atlas: Build memory layer</div>
-                                    <div class="task-meta">Due tomorrow · Priority critical</div>
+
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <span>TRADING</span>
+                                    <span>MT5</span>
                                 </div>
-                            </div>
-                            <div class="task-item">
-                                <div class="task-status completed"></div>
-                                <div class="task-content">
-                                    <div class="task-title">Review trading strategy</div>
-                                    <div class="task-meta">Completed 2h ago</div>
+                                <div class="card-value" style="color: #ff4d4d;">-2.3%</div>
+                                <div class="card-trend" style="color: #ff4d4d;">▼ 1.2% today</div>
+                                <div style="margin-top: 1rem; font-size: 0.85rem; color: #8a9bb5;">
+                                    Positions: 2 open · Risk: elevated
                                 </div>
                             </div>
                         </div>
 
-                        <div class="terminal-container">
-                            <div class="terminal-header">
-                                <div class="terminal-dots">
-                                    <div class="terminal-dot red"></div>
-                                    <div class="terminal-dot yellow"></div>
-                                    <div class="terminal-dot green"></div>
+                        <!-- Output Terminal -->
+                        <div class="output-container">
+                            <div class="output-header">
+                                <div class="output-dots">
+                                    <div class="output-dot red"></div>
+                                    <div class="output-dot yellow"></div>
+                                    <div class="output-dot green"></div>
                                 </div>
-                                <div class="terminal-title">atlas@core:~</div>
-                            </div>
-                            <div class="terminal-body" id="terminalBody">
-                                <div class="terminal-line">
-                                    <span class="terminal-prompt">$</span> Last session: /plan finflow
-                                </div>
-                                <div class="terminal-line">
-                                    <span class="terminal-prompt">></span> Atlas ready. Awaiting command.
+                                <div class="output-title">atlas@core:~</div>
+                                <div class="neural-indicator" id="thinkingIndicator" style="display: none;">
+                                    <span></span><span></span><span></span>
                                 </div>
                             </div>
-                            <div class="terminal-input-line">
-                                <span class="terminal-prompt-symbol">❯</span>
-                                <input type="text" id="terminalInput" placeholder="enter command...">
+                            <div class="output-body" id="outputBody">
+                                <div class="output-line">
+                                    <span class="output-prompt">■</span> System online. Context loaded.
+                                </div>
+                                <div class="output-line">
+                                    <span class="output-prompt">■</span> 2 tasks pending · FinFlow requires attention
+                                </div>
+                                <div class="output-card">
+                                    <div class="output-card-title">/plan finflow</div>
+                                    <div class="output-card-content">
+                                        Transaction sync pending · Banking API window closes in 3h<br>
+                                        Priority: HIGH · Est. time: 45min
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Dashboard View (hidden by default) -->
-                    <div id="dashboardView" style="display: none;">
-                        <h2 style="color: #fff; margin-bottom: 1rem;">Systems Overview</h2>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-                            <div style="background: #0a0c0e; padding: 1rem; border-radius: 8px; border: 1px solid #1e2a3a;">
-                                <div style="color: #5f738c; margin-bottom: 0.5rem;">Projects</div>
-                                <div style="font-size: 2rem; color: #64b5f6;">4</div>
-                                <div style="color: #7b8c9e; font-size: 0.8rem;">3 active, 1 planned</div>
+                    <!-- TERMINAL VIEW (hidden) -->
+                    <div id="terminalView" style="display: none;">
+                        <div class="output-container" style="min-height: 500px;">
+                            <div class="output-header">
+                                <div class="output-dots">
+                                    <div class="output-dot red"></div>
+                                    <div class="output-dot yellow"></div>
+                                    <div class="output-dot green"></div>
+                                </div>
+                                <div class="output-title">atlas@core:~/terminal</div>
                             </div>
-                            <div style="background: #0a0c0e; padding: 1rem; border-radius: 8px; border: 1px solid #1e2a3a;">
-                                <div style="color: #5f738c; margin-bottom: 0.5rem;">Trading</div>
-                                <div style="font-size: 2rem; color: #f5a623;">-2.3%</div>
-                                <div style="color: #7b8c9e; font-size: 0.8rem;">This week</div>
+                            <div class="output-body" id="terminalOutputBody" style="min-height: 400px;">
+                                <div class="output-line">
+                                    <span class="output-prompt">$</span> Atlas terminal v0.1
+                                </div>
+                                <div class="output-line">
+                                    <span class="output-prompt">></span> Type /help for commands
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Memory View (hidden by default) -->
-                    <div id="memoryView" style="display: none;">
-                        <h2 style="color: #fff; margin-bottom: 1rem;">Long-term Memory</h2>
-                        <div style="color: #7b8c9e; font-style: italic;">Building memory architecture...</div>
+                    <!-- GRAPH VIEW (hidden) -->
+                    <div id="graphView" style="display: none;">
+                        <div style="background: #0a0d14; border: 1px solid #1e2632; border-radius: 12px; padding: 2rem; text-align: center; color: #5f738c;">
+                            Knowledge graph loading...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMMAND INPUT AREA -->
+                <div class="command-area">
+                    <div class="input-container">
+                        <span class="command-prompt">❯</span>
+                        <input type="text" id="commandInput" placeholder="enter command or ask anything...">
+                        <div class="command-send" onclick="sendCommand()">↵</div>
+                    </div>
+                    <div class="quick-actions">
+                        <span class="quick-action" onclick="quickCommand('/plan')">/plan</span>
+                        <span class="quick-action" onclick="quickCommand('/build')">/build</span>
+                        <span class="quick-action" onclick="quickCommand('/trade')">/trade</span>
+                        <span class="quick-action" onclick="quickCommand('/reflect')">/reflect</span>
+                        <span class="quick-action" onclick="quickCommand('/status')">/status</span>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <button class="action-button primary" onclick="quickAction('focus')">⟳ focus mode</button>
-            <button class="action-button" onclick="quickAction('snapshot')">📸 snapshot</button>
-            <button class="action-button" onclick="quickAction('sync')">🔄 sync</button>
-            <button class="action-button" onclick="quickAction('export')">📤 export</button>
-            <div style="flex: 1"></div>
-            <span style="color: #5f738c; font-size: 0.8rem;">v0.2 · building</span>
         </div>
     </div>
 
     <script>
         // State
-        let currentCommand = '/plan';
-        let currentTab = 'terminal';
+        let currentModule = 'dashboard';
+        let currentView = 'dashboard';
         let commandHistory = [];
         let historyIndex = -1;
 
@@ -685,8 +806,7 @@
             updateTime();
             setInterval(updateTime, 1000);
             
-            // Load command history from localStorage
-            const saved = localStorage.getItem('atlas_history');
+            const saved = localStorage.getItem('atlas_command_history');
             if (saved) {
                 commandHistory = JSON.parse(saved);
             }
@@ -698,186 +818,156 @@
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-            
-            // Update greeting if needed
-            const greeting = document.querySelector('.greeting-line');
-            if (greeting) {
-                greeting.innerHTML = `EJ. <span class="highlight">${hours}:${minutes}</span>`;
-            }
         }
 
-        // Set active command
-        function setActiveCommand(element, command) {
-            document.querySelectorAll('.command-item').forEach(el => {
+        // Module switching
+        function setModule(element, module) {
+            document.querySelectorAll('.module-item').forEach(el => {
                 el.classList.remove('active');
             });
             element.classList.add('active');
-            currentCommand = command;
+            currentModule = module;
             
-            // Show thinking
-            showThinking();
+            document.getElementById('contextIndicator').textContent = `/${module}`;
             
-            // Simulate processing
-            setTimeout(() => {
-                hideThinking();
-                addTerminalLine(`Switched to ${command} context`);
-                
-                // Context-specific responses
-                if (command === '/plan') {
-                    addTerminalLine('Planning mode: FinFlow strategy review pending');
-                } else if (command === '/trade') {
-                    addTerminalLine('Market update: EUR/USD volatile, check risk parameters');
-                } else if (command === '/build') {
-                    addTerminalLine('Build targets: Atlas memory layer (32% complete)');
+            // Update dashboard based on module
+            if (module === 'dashboard') {
+                showDashboardView();
+            } else {
+                addOutputLine(`Switched to ${module} context`);
+                if (module === 'tasks') {
+                    addOutputLine('Tasks: 3 pending · 1 high priority');
+                } else if (module === 'finflow') {
+                    addOutputLine('FinFlow: Transaction sync pending · Banking API rate limited');
+                } else if (module === 'trading') {
+                    addOutputLine('Trading: EUR/USD -0.4% · BTC +2.3%');
                 }
-            }, 500);
+            }
         }
 
-        // Switch tabs
-        function switchTab(tab) {
-            currentTab = tab;
+        // View switching
+        function switchView(view) {
+            currentView = view;
             
-            // Update tab styling
-            document.querySelectorAll('.tab').forEach(el => {
+            document.querySelectorAll('.view-tab').forEach(el => {
                 el.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Show correct view
-            document.getElementById('terminalView').style.display = tab === 'terminal' ? 'block' : 'none';
-            document.getElementById('dashboardView').style.display = tab === 'dashboard' ? 'block' : 'none';
-            document.getElementById('memoryView').style.display = tab === 'memory' ? 'block' : 'none';
+            document.getElementById('dashboardView').style.display = view === 'dashboard' ? 'block' : 'none';
+            document.getElementById('terminalView').style.display = view === 'terminal' ? 'block' : 'none';
+            document.getElementById('graphView').style.display = view === 'graph' ? 'block' : 'none';
         }
 
-        // Terminal input handling
-        document.getElementById('terminalInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const input = this.value.trim();
-                if (input) {
-                    processCommand(input);
-                    this.value = '';
-                }
-            }
-        });
+        // Show dashboard view
+        function showDashboardView() {
+            switchView('dashboard');
+        }
 
-        // Process command
-        function processCommand(input) {
-            // Add to history
-            commandHistory.push(input);
-            localStorage.setItem('atlas_history', JSON.stringify(commandHistory));
+        // Command handling
+        function sendCommand() {
+            const input = document.getElementById('commandInput');
+            const command = input.value.trim();
             
-            // Show in terminal
-            addTerminalLine(`> ${input}`, 'user');
+            if (!command) return;
+            
+            // Add to history
+            commandHistory.push(command);
+            localStorage.setItem('atlas_command_history', JSON.stringify(commandHistory));
+            
+            // Show in output
+            addOutputLine(`> ${command}`, 'user');
             
             // Show thinking
             showThinking();
             
-            // Process based on input
+            // Process
             setTimeout(() => {
                 hideThinking();
-                
-                const lower = input.toLowerCase();
-                
-                // Command routing
-                if (lower.startsWith('/plan')) {
-                    handlePlanCommand(input);
-                } else if (lower.startsWith('/build')) {
-                    handleBuildCommand(input);
-                } else if (lower.startsWith('/trade')) {
-                    handleTradeCommand(input);
-                } else if (lower === 'status' || lower === 'sys') {
-                    showSystemStatus();
-                } else if (lower.includes('finflow')) {
-                    addTerminalLine('FinFlow: Transaction sync pending. Banking API rate limited.');
-                    addTerminalLine('Next retry: 15 minutes');
-                } else if (lower.includes('atlas')) {
-                    addTerminalLine('Atlas core: v0.2 · Memory layer in development');
-                    addTerminalLine('Learning rate: 78% · Context windows: 3');
-                } else if (lower.includes('help')) {
-                    showHelp();
-                } else {
-                    // Default response - feels like it's learning
-                    const responses = [
-                        `Processing: "${input}". Adding to learning queue.`,
-                        `Noted. This will inform future responses.`,
-                        `Logged to memory. I'll reference this later.`,
-                        `Context saved. What else?`
-                    ];
-                    addTerminalLine(responses[Math.floor(Math.random() * responses.length)]);
-                }
-                
-                // Success feedback
-                document.querySelector('.terminal-input-line').classList.add('success-flash');
-                setTimeout(() => {
-                    document.querySelector('.terminal-input-line').classList.remove('success-flash');
-                }, 500);
-            }, 600 + Math.random() * 400);
+                processCommand(command);
+            }, 400);
+            
+            input.value = '';
         }
 
-        // Command handlers
-        function handlePlanCommand(input) {
-            addTerminalLine('=== PLAN CONTEXT ===');
-            addTerminalLine('• FinFlow: Implement transaction sync (high priority)');
-            addTerminalLine('• Atlas: Design memory schema (in progress)');
-            addTerminalLine('• Trading: Define risk parameters (not started)');
-            addTerminalLine('');
-            addTerminalLine('Recommendation: Focus on FinFlow sync first. Banking API window closes in 3h.');
+        function processCommand(command) {
+            const lower = command.toLowerCase();
+            
+            // Command routing
+            if (lower.startsWith('/plan')) {
+                addOutputLine('=== PLAN ===');
+                addOutputLine('• FinFlow: Transaction sync (high)');
+                addOutputLine('• Atlas: Memory schema (in progress)');
+                addOutputLine('• Trading: Risk parameters (not started)');
+            }
+            else if (lower.startsWith('/build')) {
+                addOutputLine('=== BUILD ===');
+                addOutputLine('1. Atlas memory layer · 32%');
+                addOutputLine('2. FinFlow backend · 75%');
+                addOutputLine('3. Trading bot · 15%');
+            }
+            else if (lower.startsWith('/trade')) {
+                addOutputLine('=== MARKETS ===');
+                addOutputLine('EUR/USD: -0.4% · Volatility: high');
+                addOutputLine('BTC: +2.3% · Support at 45k');
+                addOutputLine('Positions: 2 open · P/L: -$124.50');
+            }
+            else if (lower.startsWith('/reflect')) {
+                addOutputLine('=== REFLECTION ===');
+                addOutputLine('Last 24h: Progress on FinFlow, trading review pending');
+                addOutputLine('Energy: Focused · Recommend: tackle high-priority tasks');
+            }
+            else if (lower.startsWith('/status')) {
+                addOutputLine('=== SYSTEM ===');
+                addOutputLine('Uptime: 12d · Memory: 43% · Learning: 78%');
+            }
+            else if (lower.includes('finflow')) {
+                addOutputLine('FinFlow: Transaction sync pending. Banking API window closes in 3h.');
+                addOutputLine('Priority: HIGH · Est. time: 45min');
+            }
+            else if (lower.includes('atlas')) {
+                addOutputLine('Atlas core: v0.2 · Memory layer in development');
+                addOutputLine('Learning rate: 78% · Context windows: 3');
+            }
+            else if (lower.includes('help') || lower === '/help') {
+                addOutputLine('=== COMMANDS ===');
+                addOutputLine('/plan     - Strategy');
+                addOutputLine('/build    - Projects');
+                addOutputLine('/trade    - Markets');
+                addOutputLine('/reflect  - Journal');
+                addOutputLine('/status   - System');
+            }
+            else {
+                // Natural language - feels like learning
+                const responses = [
+                    `Processing: "${command}". Adding to learning queue.`,
+                    `Noted. This will inform future responses.`,
+                    `Context saved. What else?`,
+                    `I'll remember this. Continue.`
+                ];
+                addOutputLine(responses[Math.floor(Math.random() * responses.length)]);
+            }
         }
 
-        function handleBuildCommand(input) {
-            addTerminalLine('=== BUILD TARGETS ===');
-            addTerminalLine('1. Atlas memory layer · 32% complete');
-            addTerminalLine('   Next: Vector database integration');
-            addTerminalLine('2. FinFlow backend · 75% complete');
-            addTerminalLine('   Next: Transaction categorization');
-            addTerminalLine('3. Trading bot · 15% complete');
-            addTerminalLine('   Next: Backtesting framework');
+        function quickCommand(cmd) {
+            document.getElementById('commandInput').value = cmd;
+            sendCommand();
         }
 
-        function handleTradeCommand(input) {
-            addTerminalLine('=== MARKET SNAPSHOT ===');
-            addTerminalLine('EUR/USD: -0.4% · Volatility: high');
-            addTerminalLine('BTC: +2.3% · Support at 45k');
-            addTerminalLine('Risk level: elevated');
-            addTerminalLine('');
-            addTerminalLine('Positions: 2 open · P/L: -$124.50');
-        }
-
-        function showSystemStatus() {
-            addTerminalLine('=== SYSTEM STATUS ===');
-            addTerminalLine('Uptime: 12d 4h 23m');
-            addTerminalLine('Memory usage: 43%');
-            addTerminalLine('Context windows: 3 active');
-            addTerminalLine('Learning rate: 78%');
-            addTerminalLine('Last backup: 2h ago');
-        }
-
-        function showHelp() {
-            addTerminalLine('=== AVAILABLE COMMANDS ===');
-            addTerminalLine('/plan     - Strategy & planning');
-            addTerminalLine('/build    - Project management');
-            addTerminalLine('/trade    - Markets & positions');
-            addTerminalLine('/research - Learning mode');
-            addTerminalLine('/reflect  - Journal & notes');
-            addTerminalLine('/system   - System status');
-            addTerminalLine('');
-            addTerminalLine('Natural language: Ask about FinFlow, Atlas, trading');
-        }
-
-        // Terminal helpers
-        function addTerminalLine(text, type = 'system') {
-            const terminal = document.getElementById('terminalBody');
+        // Output helpers
+        function addOutputLine(text, type = 'system') {
+            const outputBody = document.getElementById('outputBody');
             const line = document.createElement('div');
-            line.className = 'terminal-line';
+            line.className = 'output-line';
             
             if (type === 'user') {
-                line.innerHTML = `<span class="terminal-prompt">❯</span> ${text}`;
+                line.innerHTML = `<span class="output-prompt">❯</span> ${text}`;
             } else {
-                line.innerHTML = `<span class="terminal-prompt">■</span> ${text}`;
+                line.innerHTML = `<span class="output-prompt">■</span> ${text}`;
             }
             
-            terminal.appendChild(line);
-            terminal.scrollTop = terminal.scrollHeight;
+            outputBody.appendChild(line);
+            outputBody.scrollTop = outputBody.scrollHeight;
         }
 
         function showThinking() {
@@ -888,38 +978,24 @@
             document.getElementById('thinkingIndicator').style.display = 'none';
         }
 
-        // Quick actions
-        function quickAction(action) {
-            showThinking();
-            
-            setTimeout(() => {
-                hideThinking();
-                
-                if (action === 'focus') {
-                    addTerminalLine('Focus mode engaged. Blocking distractions...');
-                    document.body.style.filter = 'brightness(0.9)';
-                } else if (action === 'snapshot') {
-                    addTerminalLine('System snapshot saved to /memory/snapshots');
-                } else if (action === 'sync') {
-                    addTerminalLine('Syncing with cloud... Complete.');
-                } else if (action === 'export') {
-                    addTerminalLine('Exporting context to /exports');
-                }
-            }, 800);
-        }
-
         // Keyboard shortcuts
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendCommand();
+            }
+        });
+
         document.addEventListener('keydown', function(e) {
-            // Ctrl+K to clear terminal
+            // Ctrl+K to clear output
             if (e.ctrlKey && e.key === 'k') {
                 e.preventDefault();
-                document.getElementById('terminalBody').innerHTML = '';
-                addTerminalLine('Terminal cleared.');
+                document.getElementById('outputBody').innerHTML = '';
+                addOutputLine('Output cleared.');
             }
             
             // Up arrow for history
             if (e.key === 'ArrowUp') {
-                const input = document.getElementById('terminalInput');
+                const input = document.getElementById('commandInput');
                 if (commandHistory.length > 0) {
                     if (historyIndex < 0) historyIndex = commandHistory.length - 1;
                     input.value = commandHistory[historyIndex];
@@ -929,12 +1005,13 @@
             
             // Down arrow for history
             if (e.key === 'ArrowDown') {
+                const input = document.getElementById('commandInput');
                 if (historyIndex < commandHistory.length - 1) {
                     historyIndex++;
-                    document.getElementById('terminalInput').value = commandHistory[historyIndex];
+                    input.value = commandHistory[historyIndex];
                 } else {
                     historyIndex = -1;
-                    document.getElementById('terminalInput').value = '';
+                    input.value = '';
                 }
             }
         });
