@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATLAS OS · v1</title>
+    <title>Atlas · executor</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, monospace;
         }
 
         body {
@@ -20,31 +20,26 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
-            overflow: hidden;
-            letter-spacing: 0.2px;
         }
 
-        /* Main OS Container */
-        .atlas-os {
-            width: 1440px;
+        .atlas-terminal {
+            width: 800px;
             max-width: 100%;
-            height: 960px;
-            max-height: 98vh;
+            height: 600px;
             background: #0a0c12;
             border: 1px solid #1e2632;
             border-radius: 16px;
-            display: grid;
-            grid-template-rows: 48px 1fr;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-            position: relative;
         }
 
-        /* ===== TOP STATUS BAR ===== */
-        .status-bar {
+        /* Simple status bar */
+        .status-line {
             background: #0d0f17;
             border-bottom: 1px solid #1e2632;
-            padding: 0 1.5rem;
+            padding: 0.8rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -52,26 +47,16 @@
             color: #8a9bb5;
         }
 
-        .status-left {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-
         .atlas-logo {
             color: #64b5f6;
             font-weight: 600;
-            letter-spacing: 2px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: 1px;
         }
 
         .atlas-logo::before {
             content: '●';
             color: #4caf50;
-            font-size: 0.7rem;
+            margin-right: 8px;
             animation: pulse 2s infinite;
         }
 
@@ -80,375 +65,110 @@
             50% { opacity: 0.5; }
         }
 
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-label {
-            color: #4b5f73;
-        }
-
-        .status-value {
-            color: #e0e4e8;
-        }
-
-        .mode-badge {
-            background: #1a2533;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            color: #64b5f6;
-            border: 1px solid #2a3a4a;
-        }
-
-        .status-right {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        /* ===== MAIN GRID ===== */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            overflow: hidden;
-            height: 100%;
-        }
-
-        /* ===== LEFT PANEL - MODULES ===== */
-        .modules-panel {
-            background: #0b0e14;
-            border-right: 1px solid #1e2632;
-            padding: 1.5rem 0;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .module-section {
-            margin-bottom: 2rem;
-        }
-
-        .module-header {
-            padding: 0 1.5rem;
-            margin-bottom: 0.8rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #4b5f73;
-            font-weight: 500;
-        }
-
-        .module-item {
-            padding: 0.7rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #8a9bb5;
-            border-left: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-size: 0.9rem;
-            margin: 2px 0;
-        }
-
-        .module-item:hover {
-            background: #1a232e;
-            color: #e0e4e8;
-        }
-
-        .module-item.active {
-            background: #1a232e;
-            border-left-color: #64b5f6;
-            color: #fff;
-        }
-
-        .module-icon {
-            width: 20px;
-            text-align: center;
-            color: #4b5f73;
-        }
-
-        .module-item.active .module-icon {
-            color: #64b5f6;
-        }
-
-        .module-count {
-            margin-left: auto;
-            font-size: 0.75rem;
-            background: #1e2632;
-            padding: 2px 6px;
-            border-radius: 10px;
-            color: #8a9bb5;
-        }
-
-        /* Quick Stats in Left Panel */
-        .quick-stats {
-            margin-top: auto;
-            padding: 1.5rem;
-            border-top: 1px solid #1e2632;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.8rem;
-        }
-
-        .stat-label {
-            color: #5f738c;
-        }
-
-        .stat-number {
-            color: #64b5f6;
-            font-weight: 500;
-        }
-
-        .progress-track {
-            height: 3px;
-            background: #1e2632;
-            border-radius: 2px;
-            margin: 0.5rem 0 1rem;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #64b5f6;
-            width: 65%;
-        }
-
-        /* ===== MAIN PANEL ===== */
-        .main-panel {
-            background: #0c0f16;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Panel Header with Tabs */
-        .panel-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #1e2632;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .view-tabs {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .view-tab {
-            color: #5f738c;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding-bottom: 0.3rem;
-            border-bottom: 2px solid transparent;
-        }
-
-        .view-tab.active {
-            color: #64b5f6;
-            border-bottom-color: #64b5f6;
-        }
-
-        .context-indicator {
-            color: #8a9bb5;
-            font-size: 0.8rem;
-            background: #1a232e;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #2a3a4a;
-        }
-
-        /* Content Area */
-        .content-area {
+        /* Main chat area - clean, focused */
+        .chat-area {
             flex: 1;
             overflow-y: auto;
             padding: 1.5rem;
-        }
-
-        /* Dashboard View */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .dashboard-card {
-            background: #0a0d14;
-            border: 1px solid #1e2632;
-            border-radius: 12px;
-            padding: 1.2rem;
-        }
-
-        .card-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            color: #5f738c;
-            font-size: 0.8rem;
-        }
-
-        .card-value {
-            font-size: 2rem;
-            color: #fff;
-            font-weight: 400;
-            margin-bottom: 0.3rem;
-        }
-
-        .card-trend {
-            font-size: 0.75rem;
-            color: #4caf50;
-        }
-
-        .task-list {
-            margin-top: 0.5rem;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 0.7rem 0;
-            border-bottom: 1px solid #1a232e;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #f5a623;
-        }
-
-        .task-dot.completed {
-            background: #4caf50;
-        }
-
-        .task-dot.high {
-            background: #ff4d4d;
-        }
-
-        .task-content {
-            flex: 1;
-            font-size: 0.9rem;
-        }
-
-        .task-meta {
-            font-size: 0.7rem;
-            color: #5f738c;
-        }
-
-        /* Terminal/Output View */
-        .output-container {
-            background: #0a0d14;
-            border: 1px solid #1e2632;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .output-header {
-            background: #0d0f17;
-            padding: 0.8rem 1.2rem;
-            border-bottom: 1px solid #1e2632;
-            display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 1rem;
         }
 
-        .output-dots {
+        .message {
             display: flex;
-            gap: 6px;
+            flex-direction: column;
+            max-width: 90%;
         }
 
-        .output-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #5f738c;
+        .user-message {
+            align-self: flex-end;
         }
 
-        .output-dot.red { background: #ff5f56; }
-        .output-dot.yellow { background: #ffbd2e; }
-        .output-dot.green { background: #27c93f; }
-
-        .output-title {
-            color: #8a9bb5;
-            font-size: 0.8rem;
+        .atlas-message {
+            align-self: flex-start;
         }
 
-        .output-body {
-            padding: 1.2rem;
-            min-height: 200px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .output-line {
-            margin-bottom: 0.8rem;
-            color: #cbd5e0;
-            font-size: 0.9rem;
+        .message-bubble {
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
             line-height: 1.5;
+            word-break: break-word;
         }
 
-        .output-prompt {
-            color: #64b5f6;
-            margin-right: 10px;
+        .user-message .message-bubble {
+            background: #1a2533;
+            color: #fff;
+            border-bottom-right-radius: 4px;
         }
 
-        .output-card {
+        .atlas-message .message-bubble {
             background: #0d0f17;
             border: 1px solid #1e2632;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
+            color: #e0e4e8;
+            border-bottom-left-radius: 4px;
         }
 
-        .output-card-title {
-            color: #64b5f6;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+        .message-time {
+            font-size: 0.7rem;
+            color: #5f738c;
+            margin-top: 0.3rem;
+            padding: 0 0.5rem;
         }
 
-        .output-card-content {
-            color: #8a9bb5;
-            font-size: 0.85rem;
-            line-height: 1.6;
+        /* Thinking indicator */
+        .thinking {
+            display: flex;
+            gap: 4px;
+            padding: 0.5rem 1rem;
+            background: #0d0f17;
+            border: 1px solid #1e2632;
+            border-radius: 20px;
+            width: fit-content;
         }
 
-        /* Command Input */
-        .command-area {
-            padding: 1rem 1.5rem 1.5rem;
+        .thinking span {
+            width: 6px;
+            height: 6px;
+            background: #64b5f6;
+            border-radius: 50%;
+            animation: think 1.4s infinite;
+        }
+
+        .thinking span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes think {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* Input area */
+        .input-area {
+            padding: 1rem 1.5rem;
             border-top: 1px solid #1e2632;
+            background: #0a0c12;
         }
 
-        .input-container {
+        .input-wrapper {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            background: #0a0d14;
+            background: #0d0f17;
             border: 1px solid #1e2632;
             border-radius: 40px;
-            padding: 0.3rem 0.3rem 0.3rem 1.5rem;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
         }
 
-        .input-container:focus-within {
+        .input-wrapper:focus-within {
             border-color: #64b5f6;
         }
 
-        .command-prompt {
+        .prompt {
             color: #64b5f6;
-            font-weight: 600;
             font-size: 1rem;
+            font-weight: 600;
         }
 
         #commandInput {
@@ -463,10 +183,9 @@
 
         #commandInput::placeholder {
             color: #3a4a5a;
-            font-style: normal;
         }
 
-        .command-send {
+        .send-button {
             background: #1a2632;
             border: 1px solid #2a3a4a;
             color: #8a9bb5;
@@ -480,21 +199,21 @@
             transition: all 0.2s;
         }
 
-        .command-send:hover {
+        .send-button:hover {
             background: #2a3a4a;
             color: #64b5f6;
             border-color: #64b5f6;
         }
 
-        /* Quick Actions */
-        .quick-actions {
+        /* Quick commands */
+        .quick-row {
             display: flex;
             gap: 0.5rem;
             margin-top: 0.8rem;
-            padding-left: 0.5rem;
+            flex-wrap: wrap;
         }
 
-        .quick-action {
+        .quick-cmd {
             background: transparent;
             border: 1px solid #1e2632;
             color: #5f738c;
@@ -504,41 +223,45 @@
             cursor: pointer;
         }
 
-        .quick-action:hover {
+        .quick-cmd:hover {
             border-color: #64b5f6;
             color: #64b5f6;
         }
 
-        /* Thinking Animation */
-        .neural-indicator {
-            display: inline-flex;
-            gap: 3px;
+        /* Feature reminder banner */
+        .reminder-banner {
+            background: #1a2533;
+            border-left: 3px solid #64b5f6;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #8a9bb5;
+            border-radius: 0 8px 8px 0;
+            display: flex;
             align-items: center;
-            margin-left: 10px;
+            justify-content: space-between;
         }
 
-        .neural-indicator span {
-            width: 3px;
-            height: 3px;
-            background: #64b5f6;
-            border-radius: 50%;
-            animation: neuralPulse 1.5s infinite;
+        .reminder-banner .highlight {
+            color: #64b5f6;
         }
 
-        .neural-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .neural-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes neuralPulse {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.5); }
+        .reminder-close {
+            cursor: pointer;
+            color: #5f738c;
+            font-size: 1.2rem;
         }
 
-        /* Custom Scrollbar */
+        .reminder-close:hover {
+            color: #fff;
+        }
+
+        /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a0d14;
+            background: #0a0c12;
         }
         ::-webkit-scrollbar-thumb {
             background: #2a3a4a;
@@ -547,477 +270,296 @@
     </style>
 </head>
 <body>
-    <div class="atlas-os">
-        <!-- TOP STATUS BAR -->
-        <div class="status-bar">
-            <div class="status-left">
-                <div class="atlas-logo">ATLAS</div>
-                <div class="status-item">
-                    <span class="status-label">EJ</span>
-                    <span class="status-value">● active</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">time</span>
-                    <span class="status-value" id="currentTime">21:47</span>
-                </div>
-                <div class="mode-badge">FOCUS MODE</div>
+    <div class="atlas-terminal">
+        <!-- Status - minimal -->
+        <div class="status-line">
+            <div class="atlas-logo">ATLAS</div>
+            <div>EJ · 2 tasks · MT5 -0.4%</div>
+        </div>
+
+        <!-- Chat area -->
+        <div class="chat-area" id="chatArea">
+            <!-- Feature reminder (Atlas reminding YOU) -->
+            <div class="reminder-banner" id="featureReminder">
+                <span>
+                    <span class="highlight">⚡ Feature idea:</span> 
+                    Add trading data API so I can check markets for you
+                </span>
+                <span class="reminder-close" onclick="dismissReminder()">×</span>
             </div>
-            <div class="status-right">
-                <div class="status-item">
-                    <span class="status-label">tasks</span>
-                    <span class="status-value">2 pending</span>
+
+            <!-- Welcome message -->
+            <div class="message atlas-message">
+                <div class="message-bubble">
+                    EJ. I'm here. What do you need?
                 </div>
-                <div class="status-item">
-                    <span class="status-label">MT5</span>
-                    <span class="status-value" style="color: #ff4d4d;">-0.4%</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">system</span>
-                    <span class="status-value">98%</span>
-                </div>
+                <div class="message-time">just now</div>
             </div>
         </div>
 
-        <!-- MAIN GRID -->
-        <div class="main-grid">
-            <!-- LEFT MODULES PANEL -->
-            <div class="modules-panel">
-                <div class="module-section">
-                    <div class="module-header">core</div>
-                    <div class="module-item active" onclick="setModule(this, 'dashboard')">
-                        <span class="module-icon">⌂</span>
-                        <span>Dashboard</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'tasks')">
-                        <span class="module-icon">✓</span>
-                        <span>Tasks</span>
-                        <span class="module-count">3</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'projects')">
-                        <span class="module-icon">⊞</span>
-                        <span>Projects</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'journal')">
-                        <span class="module-icon">📔</span>
-                        <span>Journal</span>
-                    </div>
-                </div>
-
-                <div class="module-section">
-                    <div class="module-header">intelligence</div>
-                    <div class="module-item" onclick="setModule(this, 'research')">
-                        <span class="module-icon">◉</span>
-                        <span>Research</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'learning')">
-                        <span class="module-icon">▲</span>
-                        <span>Learning</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'memory')">
-                        <span class="module-icon">◈</span>
-                        <span>Memory</span>
-                    </div>
-                </div>
-
-                <div class="module-section">
-                    <div class="module-header">systems</div>
-                    <div class="module-item" onclick="setModule(this, 'finflow')">
-                        <span class="module-icon">₿</span>
-                        <span>FinFlow</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'trading')">
-                        <span class="module-icon">📊</span>
-                        <span>Trading</span>
-                    </div>
-                    <div class="module-item" onclick="setModule(this, 'settings')">
-                        <span class="module-icon">⚙</span>
-                        <span>Settings</span>
-                    </div>
-                </div>
-
-                <div class="quick-stats">
-                    <div class="stat-row">
-                        <span class="stat-label">focus time</span>
-                        <span class="stat-number">12.4h</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">tasks</span>
-                        <span class="stat-number">18/24</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 75%"></div>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">streak</span>
-                        <span class="stat-number">23 days</span>
-                    </div>
-                </div>
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <span class="prompt">❯</span>
+                <input type="text" id="commandInput" placeholder="ask me to do something..." autocomplete="off">
+                <div class="send-button" onclick="sendCommand()">↵</div>
             </div>
-
-            <!-- MAIN PANEL -->
-            <div class="main-panel">
-                <!-- Panel Header -->
-                <div class="panel-header">
-                    <div class="view-tabs">
-                        <div class="view-tab active" onclick="switchView('terminal')">TERMINAL</div>
-                        <div class="view-tab" onclick="switchView('dashboard')">DASHBOARD</div>
-                        <div class="view-tab" onclick="switchView('graph')">GRAPH</div>
-                    </div>
-                    <div class="context-indicator" id="contextIndicator">
-                        /dashboard
-                    </div>
-                </div>
-
-                <!-- Content Area -->
-                <div class="content-area" id="contentArea">
-                    <!-- DASHBOARD VIEW (default) -->
-                    <div id="dashboardView">
-                        <!-- Welcome Line -->
-                        <div style="margin-bottom: 2rem;">
-                            <div style="font-size: 1.8rem; color: #fff; margin-bottom: 0.3rem;">EJ.</div>
-                            <div style="color: #8a9bb5;">2 unfinished tasks · MT5 volatile · FinFlow update pending</div>
-                        </div>
-
-                        <!-- Dashboard Cards -->
-                        <div class="dashboard-grid">
-                            <div class="dashboard-card">
-                                <div class="card-header">
-                                    <span>PROJECTS</span>
-                                    <span>4 active</span>
-                                </div>
-                                <div class="card-value">75%</div>
-                                <div class="card-trend">▲ 12% this week</div>
-                                <div class="task-list" style="margin-top: 1rem;">
-                                    <div class="task-item">
-                                        <div class="task-dot high"></div>
-                                        <div class="task-content">FinFlow: Transaction sync</div>
-                                        <div class="task-meta">today</div>
-                                    </div>
-                                    <div class="task-item">
-                                        <div class="task-dot"></div>
-                                        <div class="task-content">Atlas: Memory layer</div>
-                                        <div class="task-meta">tomorrow</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="dashboard-card">
-                                <div class="card-header">
-                                    <span>TRADING</span>
-                                    <span>MT5</span>
-                                </div>
-                                <div class="card-value" style="color: #ff4d4d;">-2.3%</div>
-                                <div class="card-trend" style="color: #ff4d4d;">▼ 1.2% today</div>
-                                <div style="margin-top: 1rem; font-size: 0.85rem; color: #8a9bb5;">
-                                    Positions: 2 open · Risk: elevated
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Output Terminal -->
-                        <div class="output-container">
-                            <div class="output-header">
-                                <div class="output-dots">
-                                    <div class="output-dot red"></div>
-                                    <div class="output-dot yellow"></div>
-                                    <div class="output-dot green"></div>
-                                </div>
-                                <div class="output-title">atlas@core:~</div>
-                                <div class="neural-indicator" id="thinkingIndicator" style="display: none;">
-                                    <span></span><span></span><span></span>
-                                </div>
-                            </div>
-                            <div class="output-body" id="outputBody">
-                                <div class="output-line">
-                                    <span class="output-prompt">■</span> System online. Context loaded.
-                                </div>
-                                <div class="output-line">
-                                    <span class="output-prompt">■</span> 2 tasks pending · FinFlow requires attention
-                                </div>
-                                <div class="output-card">
-                                    <div class="output-card-title">/plan finflow</div>
-                                    <div class="output-card-content">
-                                        Transaction sync pending · Banking API window closes in 3h<br>
-                                        Priority: HIGH · Est. time: 45min
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TERMINAL VIEW (hidden) -->
-                    <div id="terminalView" style="display: none;">
-                        <div class="output-container" style="min-height: 500px;">
-                            <div class="output-header">
-                                <div class="output-dots">
-                                    <div class="output-dot red"></div>
-                                    <div class="output-dot yellow"></div>
-                                    <div class="output-dot green"></div>
-                                </div>
-                                <div class="output-title">atlas@core:~/terminal</div>
-                            </div>
-                            <div class="output-body" id="terminalOutputBody" style="min-height: 400px;">
-                                <div class="output-line">
-                                    <span class="output-prompt">$</span> Atlas terminal v0.1
-                                </div>
-                                <div class="output-line">
-                                    <span class="output-prompt">></span> Type /help for commands
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- GRAPH VIEW (hidden) -->
-                    <div id="graphView" style="display: none;">
-                        <div style="background: #0a0d14; border: 1px solid #1e2632; border-radius: 12px; padding: 2rem; text-align: center; color: #5f738c;">
-                            Knowledge graph loading...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- COMMAND INPUT AREA -->
-                <div class="command-area">
-                    <div class="input-container">
-                        <span class="command-prompt">❯</span>
-                        <input type="text" id="commandInput" placeholder="enter command or ask anything...">
-                        <div class="command-send" onclick="sendCommand()">↵</div>
-                    </div>
-                    <div class="quick-actions">
-                        <span class="quick-action" onclick="quickCommand('/plan')">/plan</span>
-                        <span class="quick-action" onclick="quickCommand('/build')">/build</span>
-                        <span class="quick-action" onclick="quickCommand('/trade')">/trade</span>
-                        <span class="quick-action" onclick="quickCommand('/reflect')">/reflect</span>
-                        <span class="quick-action" onclick="quickCommand('/status')">/status</span>
-                    </div>
-                </div>
+            
+            <!-- Quick commands -->
+            <div class="quick-row">
+                <span class="quick-cmd" onclick="quickCommand('how is the market?')">market</span>
+                <span class="quick-cmd" onclick="quickCommand('check my notifications')">notifications</span>
+                <span class="quick-cmd" onclick="quickCommand('remind me about finflow')">remind</span>
+                <span class="quick-cmd" onclick="quickCommand('tell me a joke')">joke</span>
+                <span class="quick-cmd" onclick="quickCommand('what features should i add?')">roadmap</span>
             </div>
         </div>
     </div>
 
     <script>
-        // State
-        let currentModule = 'dashboard';
-        let currentView = 'dashboard';
-        let commandHistory = [];
-        let historyIndex = -1;
+        const chatArea = document.getElementById('chatArea');
+        const commandInput = document.getElementById('commandInput');
+        let messageCount = 1; // Start with 1 (welcome message)
+        
+        // Features to remind about (Atlas reminds YOU to build them)
+        const featureRoadmap = [
+            "⚡ Add trading API so I can fetch real market data",
+            "🔔 Connect to device notifications so I can check them",
+            "⏰ Build reminder system so I never let you forget",
+            "📱 Give me access to your phone/sms",
+            "💰 Add position tracking for your trades",
+            "🧠 Create memory so I remember everything about you",
+            "🎯 Add voice commands so you can talk to me",
+            "🤝 Let me execute trades directly through your broker"
+        ];
+        let currentFeatureIndex = 0;
 
-        // Initialize
-        function init() {
-            updateTime();
-            setInterval(updateTime, 1000);
-            
-            const saved = localStorage.getItem('atlas_command_history');
-            if (saved) {
-                commandHistory = JSON.parse(saved);
-            }
-        }
-
-        // Update time
-        function updateTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
-        }
-
-        // Module switching
-        function setModule(element, module) {
-            document.querySelectorAll('.module-item').forEach(el => {
-                el.classList.remove('active');
-            });
-            element.classList.add('active');
-            currentModule = module;
-            
-            document.getElementById('contextIndicator').textContent = `/${module}`;
-            
-            // Update dashboard based on module
-            if (module === 'dashboard') {
-                showDashboardView();
-            } else {
-                addOutputLine(`Switched to ${module} context`);
-                if (module === 'tasks') {
-                    addOutputLine('Tasks: 3 pending · 1 high priority');
-                } else if (module === 'finflow') {
-                    addOutputLine('FinFlow: Transaction sync pending · Banking API rate limited');
-                } else if (module === 'trading') {
-                    addOutputLine('Trading: EUR/USD -0.4% · BTC +2.3%');
-                }
-            }
-        }
-
-        // View switching
-        function switchView(view) {
-            currentView = view;
-            
-            document.querySelectorAll('.view-tab').forEach(el => {
-                el.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            document.getElementById('dashboardView').style.display = view === 'dashboard' ? 'block' : 'none';
-            document.getElementById('terminalView').style.display = view === 'terminal' ? 'block' : 'none';
-            document.getElementById('graphView').style.display = view === 'graph' ? 'block' : 'none';
-        }
-
-        // Show dashboard view
-        function showDashboardView() {
-            switchView('dashboard');
-        }
-
-        // Command handling
         function sendCommand() {
-            const input = document.getElementById('commandInput');
-            const command = input.value.trim();
-            
+            const command = commandInput.value.trim();
             if (!command) return;
-            
-            // Add to history
-            commandHistory.push(command);
-            localStorage.setItem('atlas_command_history', JSON.stringify(commandHistory));
-            
-            // Show in output
-            addOutputLine(`> ${command}`, 'user');
-            
+
+            // Add user message
+            addMessage(command, 'user');
+            commandInput.value = '';
+
             // Show thinking
             showThinking();
-            
-            // Process
+
+            // Process command
             setTimeout(() => {
-                hideThinking();
+                removeThinking();
                 processCommand(command);
-            }, 400);
-            
-            input.value = '';
+                
+                // Increment message count
+                messageCount++;
+                
+                // Every 3 messages, Atlas reminds you about a feature
+                if (messageCount % 3 === 0) {
+                    suggestNextFeature();
+                }
+            }, 800);
         }
 
         function processCommand(command) {
             const lower = command.toLowerCase();
+
+            // MARKET related
+            if (lower.includes('market') || lower.includes('trade') || lower.includes('forex') || lower.includes('mt5')) {
+                addMessage(
+                    "EJ, I can't fetch real market data yet. Here's what I need:\n\n" +
+                    "• Add MT5 API integration\n" +
+                    "• Connect to a forex data source\n" +
+                    "• Set up price alerts\n\n" +
+                    "Should I remind you to build this?",
+                    'atlas'
+                );
+            }
             
-            // Command routing
-            if (lower.startsWith('/plan')) {
-                addOutputLine('=== PLAN ===');
-                addOutputLine('• FinFlow: Transaction sync (high)');
-                addOutputLine('• Atlas: Memory schema (in progress)');
-                addOutputLine('• Trading: Risk parameters (not started)');
+            // NOTIFICATIONS
+            else if (lower.includes('notification') || lower.includes('check my phone')) {
+                addMessage(
+                    "I don't have access to your device notifications yet.\n\n" +
+                    "To make this work, we need:\n" +
+                    "• Mobile app or browser extension\n" +
+                    "• Notification permissions\n" +
+                    "• Push notification service\n\n" +
+                    "Want me to add this to the roadmap?",
+                    'atlas'
+                );
             }
-            else if (lower.startsWith('/build')) {
-                addOutputLine('=== BUILD ===');
-                addOutputLine('1. Atlas memory layer · 32%');
-                addOutputLine('2. FinFlow backend · 75%');
-                addOutputLine('3. Trading bot · 15%');
+            
+            // REMINDERS
+            else if (lower.includes('remind') || lower.includes('remember')) {
+                const reminder = command.replace(/remind/i, '').replace(/me/i, '').replace(/to/i, '').trim();
+                if (reminder) {
+                    addMessage(
+                        `✅ Reminder set: "${reminder}"\n\n` +
+                        `(This is simulated right now. To make it real, we need a database.)`,
+                        'atlas'
+                    );
+                } else {
+                    addMessage("What should I remind you about?", 'atlas');
+                }
             }
-            else if (lower.startsWith('/trade')) {
-                addOutputLine('=== MARKETS ===');
-                addOutputLine('EUR/USD: -0.4% · Volatility: high');
-                addOutputLine('BTC: +2.3% · Support at 45k');
-                addOutputLine('Positions: 2 open · P/L: -$124.50');
-            }
-            else if (lower.startsWith('/reflect')) {
-                addOutputLine('=== REFLECTION ===');
-                addOutputLine('Last 24h: Progress on FinFlow, trading review pending');
-                addOutputLine('Energy: Focused · Recommend: tackle high-priority tasks');
-            }
-            else if (lower.startsWith('/status')) {
-                addOutputLine('=== SYSTEM ===');
-                addOutputLine('Uptime: 12d · Memory: 43% · Learning: 78%');
-            }
-            else if (lower.includes('finflow')) {
-                addOutputLine('FinFlow: Transaction sync pending. Banking API window closes in 3h.');
-                addOutputLine('Priority: HIGH · Est. time: 45min');
-            }
-            else if (lower.includes('atlas')) {
-                addOutputLine('Atlas core: v0.2 · Memory layer in development');
-                addOutputLine('Learning rate: 78% · Context windows: 3');
-            }
-            else if (lower.includes('help') || lower === '/help') {
-                addOutputLine('=== COMMANDS ===');
-                addOutputLine('/plan     - Strategy');
-                addOutputLine('/build    - Projects');
-                addOutputLine('/trade    - Markets');
-                addOutputLine('/reflect  - Journal');
-                addOutputLine('/status   - System');
-            }
-            else {
-                // Natural language - feels like learning
-                const responses = [
-                    `Processing: "${command}". Adding to learning queue.`,
-                    `Noted. This will inform future responses.`,
-                    `Context saved. What else?`,
-                    `I'll remember this. Continue.`
+            
+            // JOKES
+            else if (lower.includes('joke')) {
+                const jokes = [
+                    "A trader walks into a bar. The bartender asks, 'What'll it have?' The trader says, 'Whatever's trending.'",
+                    "Why did the forex trader break up with his girlfriend? She had too many emotional pips.",
+                    "I asked Atlas for a trading signal. It said: 'Buy low, sell high. You're welcome.'",
+                    "My trading strategy is like my love life: high risk, low reward."
                 ];
-                addOutputLine(responses[Math.floor(Math.random() * responses.length)]);
+                addMessage(jokes[Math.floor(Math.random() * jokes.length)], 'atlas');
+            }
+            
+            // FEATURE SUGGESTIONS (Atlas tells YOU what to build next)
+            else if (lower.includes('feature') || lower.includes('roadmap') || lower.includes('what next') || lower.includes('add')) {
+                showFullRoadmap();
+            }
+            
+            // TRADING DECISIONS
+            else if (lower.includes('buy') || lower.includes('sell') || lower.includes('entry') || lower.includes('position')) {
+                addMessage(
+                    "I can't execute trades yet, but I can help you plan.\n\n" +
+                    "What's your:\n" +
+                    "• Entry price?\n" +
+                    "• Stop loss?\n" +
+                    "• Take profit?\n\n" +
+                    "Tell me and I'll track it manually until we automate.",
+                    'atlas'
+                );
+            }
+            
+            // GREETINGS
+            else if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
+                const greetings = [
+                    "EJ. Ready when you are.",
+                    "Here. What's the move?",
+                    "Listening. Tell me what you need.",
+                    "Atlas online. Command?"
+                ];
+                addMessage(greetings[Math.floor(Math.random() * greetings.length)], 'atlas');
+            }
+            
+            // HELP
+            else if (lower.includes('help') || lower.includes('what can you do')) {
+                addMessage(
+                    "Right now, I can:\n" +
+                    "• Remind you about things (simulated)\n" +
+                    "• Tell you what features to build next\n" +
+                    "• Tell jokes\n" +
+                    "• Plan your next moves\n\n" +
+                    "Soon I'll:\n" +
+                    "• Fetch real market data\n" +
+                    "• Check your notifications\n" +
+                    "• Execute trades\n" +
+                    "• Remember everything about you\n\n" +
+                    "What do you want me to do first?",
+                    'atlas'
+                );
+            }
+            
+            // DEFAULT - Atlas learns
+            else {
+                addMessage(
+                    `"${command}" - I'll remember this. ` +
+                    `Add this to my capabilities soon.`,
+                    'atlas'
+                );
             }
         }
 
-        function quickCommand(cmd) {
-            document.getElementById('commandInput').value = cmd;
-            sendCommand();
+        // Atlas reminds you about features
+        function suggestNextFeature() {
+            const feature = featureRoadmap[currentFeatureIndex % featureRoadmap.length];
+            currentFeatureIndex++;
+            
+            const reminderDiv = document.createElement('div');
+            reminderDiv.className = 'message atlas-message';
+            reminderDiv.innerHTML = `
+                <div class="message-bubble" style="border-left-color: #64b5f6; border-left-width: 3px;">
+                    ⚡ <strong>Reminder from Atlas:</strong><br>
+                    ${feature}
+                </div>
+                <div class="message-time">just now</div>
+            `;
+            chatArea.appendChild(reminderDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // Output helpers
-        function addOutputLine(text, type = 'system') {
-            const outputBody = document.getElementById('outputBody');
-            const line = document.createElement('div');
-            line.className = 'output-line';
+        function showFullRoadmap() {
+            let roadmap = "📋 **Atlas Development Roadmap**\n\n";
+            featureRoadmap.forEach((feature, index) => {
+                roadmap += `${index + 1}. ${feature}\n`;
+            });
+            roadmap += "\nWhich one should we build first?";
             
-            if (type === 'user') {
-                line.innerHTML = `<span class="output-prompt">❯</span> ${text}`;
-            } else {
-                line.innerHTML = `<span class="output-prompt">■</span> ${text}`;
-            }
+            addMessage(roadmap, 'atlas');
+        }
+
+        // Helper functions
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
             
-            outputBody.appendChild(line);
-            outputBody.scrollTop = outputBody.scrollHeight;
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            const now = new Date();
+            time.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(time);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
         function showThinking() {
-            document.getElementById('thinkingIndicator').style.display = 'inline-flex';
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'message atlas-message';
+            thinkingDiv.id = 'thinkingIndicator';
+            
+            const thinking = document.createElement('div');
+            thinking.className = 'thinking';
+            thinking.innerHTML = '<span></span><span></span><span></span>';
+            
+            thinkingDiv.appendChild(thinking);
+            chatArea.appendChild(thinkingDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        function hideThinking() {
-            document.getElementById('thinkingIndicator').style.display = 'none';
+        function removeThinking() {
+            const thinking = document.getElementById('thinkingIndicator');
+            if (thinking) thinking.remove();
         }
 
-        // Keyboard shortcuts
-        document.getElementById('commandInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendCommand();
-            }
+        function quickCommand(cmd) {
+            commandInput.value = cmd;
+            sendCommand();
+        }
+
+        function dismissReminder() {
+            document.getElementById('featureReminder').style.display = 'none';
+        }
+
+        // Enter key
+        commandInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendCommand();
         });
 
-        document.addEventListener('keydown', function(e) {
-            // Ctrl+K to clear output
-            if (e.ctrlKey && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('outputBody').innerHTML = '';
-                addOutputLine('Output cleared.');
+        // Initial reminder after 10 seconds
+        setTimeout(() => {
+            if (messageCount === 1) {
+                addMessage(
+                    "By the way — I'll remind you every few messages about features we should build. That's my job: keep us moving forward.",
+                    'atlas'
+                );
             }
-            
-            // Up arrow for history
-            if (e.key === 'ArrowUp') {
-                const input = document.getElementById('commandInput');
-                if (commandHistory.length > 0) {
-                    if (historyIndex < 0) historyIndex = commandHistory.length - 1;
-                    input.value = commandHistory[historyIndex];
-                    historyIndex = Math.max(0, historyIndex - 1);
-                }
-            }
-            
-            // Down arrow for history
-            if (e.key === 'ArrowDown') {
-                const input = document.getElementById('commandInput');
-                if (historyIndex < commandHistory.length - 1) {
-                    historyIndex++;
-                    input.value = commandHistory[historyIndex];
-                } else {
-                    historyIndex = -1;
-                    input.value = '';
-                }
-            }
-        });
-
-        // Start
-        init();
+        }, 5000);
     </script>
 </body>
 </html>
